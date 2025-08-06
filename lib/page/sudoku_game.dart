@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
+import 'package:flutter_remix/flutter_remix.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -56,43 +57,45 @@ const Image lifePng = Image(
 );
 
 final timerPauseAssetSvg = SvgPicture.asset(
-  "assets/svg/timer_pause.svg",
-  width: 40,
-  height: 40,
+  "assets/svg/pause-mini-fill.svg",
+  width: 25,
+  height: 25,
   clipBehavior: Clip.antiAliasWithSaveLayer,
-  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.srcIn),
+  colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
 );
 
 final lightbulbAssetSvg = SvgPicture.asset(
-  "assets/svg/lightbulb.svg",
-  width: 40,
-  height: 40,
+  "assets/svg/brain-line.svg",
+  width: 25,
+  height: 25,
   clipBehavior: Clip.antiAliasWithSaveLayer,
-  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.srcIn),
+  colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
 );
 
 final lightbulbDisableAssetSvg = SvgPicture.asset(
-  "assets/svg/lightbulb.svg",
-  width: 40,
-  height: 40,
+  "assets/svg/brain-line.svg",
+  width: 25,
+  height: 25,
   clipBehavior: Clip.antiAliasWithSaveLayer,
-  colorFilter: ColorFilter.mode(Colors.black12, BlendMode.srcIn),
+  colorFilter: ColorFilter.mode(Colors.white12, BlendMode.srcIn),
 );
 
 final noteAltAssetSvg = SvgPicture.asset(
-  "assets/svg/note_alt.svg",
-  width: 40,
-  height: 40,
+  "assets/svg/sticky-note-add-line.svg",
+  width: 25,
+  height: 25,
   clipBehavior: Clip.antiAliasWithSaveLayer,
-  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.srcIn),
+  colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
 );
 
 final exitToAppAssetSvg = SvgPicture.asset(
-  "assets/svg/exit_to_app.svg",
-  width: 40,
-  height: 40,
-  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.srcIn),
+  "assets/svg/logout-circle-r-line.svg",
+  width: 25,
+  height: 25,
+  colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
 );
+
+
 
 class SudokuGamePage extends StatefulWidget {
   SudokuGamePage({Key? key, required this.title}) : super(key: key);
@@ -321,95 +324,104 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
   // fill zone [ 1 - 9 ]
   Widget _fillZone(BuildContext context) {
-    List<Widget> fillTools = List.generate(9, (index) {
-      int num = index + 1;
-      bool hasNumStock = _state.hasNumStock(num);
-      var fillOnPressed;
-      if (!hasNumStock) {
-        fillOnPressed = null;
-      } else {
-        fillOnPressed = () async {
-          log.d("input : $num");
-          if (_isOnlyReadGrid(_chooseSudokuBox)) {
-            // 非填空项
-            return;
-          }
-          if (_state.status != SudokuGameStatus.gaming) {
-            // 未在游戏进行时
-            return;
-          }
-          if (_markOpen) {
-            /// markOpen , mean use mark notes
-            log.d("填写笔记");
-            _state.switchMark(_chooseSudokuBox, num);
-          } else {
-            // 填写数字
-            _state.switchRecord(_chooseSudokuBox, num);
-            // 判断真伪
-            if (_state.record[_chooseSudokuBox] != -1 &&
-                _state.sudoku!.solution[_chooseSudokuBox] != num) {
-              // 填入错误数字 wrong answer on _chooseSudokuBox with num
-              _state.lifeLoss();
-
-              if (_state.life <= 0) {
-                // 游戏结束
-                return _gameOver();
-              }
-
-              // "\nWrong Input\nYou can't afford ${_state.life} more turnovers"
-              String wrongInputAlertText =
-                  AppLocalizations.of(context)!.wrongInputAlertText;
-              wrongInputAlertText = wrongInputAlertText.replaceFirst(
-                  "%attempts%", "${_state.life}");
-              String gotItText = AppLocalizations.of(context)!.gotItText;
-
-              showCupertinoDialog(
-                  context: context,
-                  builder: (context) {
-                    // sound stuff error
-                    SoundEffect.stuffError();
-                    return CupertinoAlertDialog(
-                      title: Text("Oops..."),
-                      content: Text(wrongInputAlertText),
-                      actions: [
-                        CupertinoDialogAction(
-                          child: Text(gotItText),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      ],
-                    );
-                  });
-
+    List<Widget> fillTools = List.generate(
+      9,
+      (index) {
+        int num = index + 1;
+        bool hasNumStock = _state.hasNumStock(num);
+        var fillOnPressed;
+        if (!hasNumStock) {
+          fillOnPressed = null;
+        } else {
+          fillOnPressed = () async {
+            log.d("input : $num");
+            if (_isOnlyReadGrid(_chooseSudokuBox)) {
+              // 非填空项
               return;
             }
-            _gameStackCount();
-          }
-        };
-      }
+            if (_state.status != SudokuGameStatus.gaming) {
+              // 未在游戏进行时
+              return;
+            }
+            if (_markOpen) {
+              /// markOpen , mean use mark notes
+              log.d("填写笔记");
+              _state.switchMark(_chooseSudokuBox, num);
+            } else {
+              // 填写数字
+              _state.switchRecord(_chooseSudokuBox, num);
+              // 判断真伪
+              if (_state.record[_chooseSudokuBox] != -1 &&
+                  _state.sudoku!.solution[_chooseSudokuBox] != num) {
+                // 填入错误数字 wrong answer on _chooseSudokuBox with num
+                _state.lifeLoss();
 
-      Color recordFontColor = hasNumStock ? Colors.black : Colors.white;
-      Color recordBgColor = hasNumStock ? Colors.black12 : Colors.white24;
+                if (_state.life <= 0) {
+                  // 游戏结束
+                  return _gameOver();
+                }
 
-      Color markFontColor = hasNumStock ? Colors.white : Colors.white;
-      Color markBgColor = hasNumStock ? Colors.black : Colors.white24;
+                // "\nWrong Input\nYou can't afford ${_state.life} more turnovers"
+                String wrongInputAlertText =
+                    AppLocalizations.of(context)!.wrongInputAlertText;
+                wrongInputAlertText = wrongInputAlertText.replaceFirst(
+                    "%attempts%", "${_state.life}");
+                String gotItText = AppLocalizations.of(context)!.gotItText;
 
-      return Expanded(
+                showCupertinoDialog(
+                    context: context,
+                    builder: (context) {
+                      // sound stuff error
+                      SoundEffect.stuffError();
+                      return CupertinoAlertDialog(
+                        title: Text("Oops..."),
+                        content: Text(wrongInputAlertText),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: Text(gotItText),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    });
+
+                return;
+              }
+              _gameStackCount();
+            }
+          };
+        }
+
+        Color recordFontColor = hasNumStock ? Colors.black : Colors.white;
+        Color recordBgColor = hasNumStock ? Colors.black12 : Colors.white24;
+
+        Color markFontColor = hasNumStock ? Colors.white : Colors.white;
+        Color markBgColor = hasNumStock ? Colors.black : Colors.white24;
+
+        return Expanded(
           flex: 1,
           child: Container(
-              margin: EdgeInsets.all(2),
-              decoration: BoxDecoration(border: BorderDirectional()),
-              child: CupertinoButton(
-                  color: _markOpen ? markBgColor : recordBgColor,
-                  padding: EdgeInsets.all(1),
-                  child: Text('${index + 1}',
-                      style: TextStyle(
-                          color: _markOpen ? markFontColor : recordFontColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: fillOnPressed)));
-    });
+            margin: EdgeInsets.all(2),
+            decoration: BoxDecoration(border: BorderDirectional()),
+            child: CupertinoButton(
+              color: _markOpen ? markBgColor : recordBgColor,
+              padding: EdgeInsets.all(1),
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(
+                  color: _markOpen ? markFontColor : recordFontColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: fillOnPressed,
+            ),
+          ),
+        );
+      },
+    );
 
     fillTools.add(Expanded(
         flex: 1,
@@ -435,19 +447,13 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 }))));
 
     return Container(
-        height: 40,
-        width: MediaQuery.of(context).size.width,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Row(children: fillTools),
-        ));
-    // return Align(
-    //     alignment: Alignment.centerLeft,
-    //     child: Container(
-    //       height: 40,
-    //       width: MediaQuery.of(context).size.width,
-    //       child: Row(children: fillTools),
-    //     ));
+      height: 40,
+      width: MediaQuery.of(context).size.width,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Row(children: fillTools),
+      ),
+    );
   }
 
   Widget _toolZone(BuildContext context) {
@@ -562,13 +568,16 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     };
 
     var _toolContentWrapper =
-        (svgPicture, label, {Color labelColor = Colors.black54}) {
+        (svgPicture, label, {Color labelColor = Colors.white54}) {
       return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         alignment: WrapAlignment.center,
         children: [
           Container(
             // color: Colors.black,
+            decoration: BoxDecoration(
+              color: Colors.white12,
+            ),
             padding: EdgeInsets.all(5),
             child: SimpleShadow(child: svgPicture),
           ),
@@ -865,14 +874,22 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   Widget _bodyWidget(BuildContext context) {
     if (_state.sudoku == null) {
       return Container(
-          color: Colors.white,
-          alignment: Alignment.center,
-          child: Center(
-              child: Text('Sudoku Exiting...',
-                  style: TextStyle(color: Colors.black),
-                  textDirection: TextDirection.ltr)));
+        color: Colors.white,
+        alignment: Alignment.center,
+        child: Center(
+          child: Text(
+            'Sudoku Exiting...',
+            style: TextStyle(color: Colors.black),
+            textDirection: TextDirection.ltr,
+          ),
+        ),
+      );
     }
-    var textValueStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
+    var textValueStyle = TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+    );
 
     return Center(
       child: Column(
@@ -883,34 +900,69 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           Container(
             height: 50,
             padding: EdgeInsets.all(10.0),
-            child: Row(children: <Widget>[
-              Expanded(
-                  flex: 1,
-                  child: Row(children: <Widget>[
-                    lifePng,
-                    Text(" x ${_state.life}", style: textValueStyle)
-                  ])),
-              // indicator
-              Expanded(
-                flex: 2,
-                child: Container(
-                    alignment: AlignmentDirectional.center,
-                    child: Text(
-                      "${LocalizationUtils.localizationLevelName(context, _state.level!)} - ${_state.timer} - ${LocalizationUtils.localizationGameStatus(context, _state.status)}",
-                      style: TextStyle(fontSize: 15),
-                    )),
-              ),
-              // tips
-              Expanded(
-                  flex: 1,
-                  child: Container(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                        ideaPng,
-                        Text(" x ${_state.hint}", style: textValueStyle)
-                      ])))
-            ]),
+            child: Row(
+              children: <Widget>[
+                // Expanded(
+                //   flex: 1,
+                //   child: Row(
+                //     children: <Widget>[
+                //       lifePng,
+                //       Text(" x ${_state.life}", style: textValueStyle)
+                //     ],
+                //   ),
+                // ),
+
+                // indicator
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        FlutterRemix.time_line,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 5),
+                      Container(
+                        alignment: AlignmentDirectional.center,
+                        child: Text(
+                          // "${LocalizationUtils.localizationLevelName(context, _state.level!)} - ${_state.timer} - ${LocalizationUtils.localizationGameStatus(context, _state.status)}",
+                          _state.timer,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //lifes
+                Row(
+                  children: List.generate(
+                    _state.life,
+                    (index) => Icon(
+                      FlutterRemix.heart_fill,
+                      color: Colors.red,
+                    ),
+                  ),
+                )
+
+                // tips
+                // Expanded(
+                //   flex: 1,
+                //   child: Container(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.end,
+                //       children: <Widget>[
+                //         ideaPng,
+                //         Text(" x ${_state.hint}", style: textValueStyle)
+                //       ],
+                //     ),
+                //   ),
+                // )
+              ],
+            ),
           ),
 
           /// 9 x 9 cells sudoku puzzle board
@@ -1043,14 +1095,18 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   @override
   Widget build(BuildContext context) {
     Scaffold scaffold = Scaffold(
-      appBar: AppBar(title: Text(widget.title), actions: [
-        IconButton(
-          icon: Icon(Icons.info_outline),
-          onPressed: () {
-            return _aboutDialogAction(context);
-          },
-        )
-      ]),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              return _aboutDialogAction(context);
+            },
+          )
+        ],
+      ),
       body: _willPopWidget(
         context,
         ScopedModelDescendant<SudokuState>(
