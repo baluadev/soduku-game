@@ -95,8 +95,6 @@ final exitToAppAssetSvg = SvgPicture.asset(
   colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
 );
 
-
-
 class SudokuGamePage extends StatefulWidget {
   SudokuGamePage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -394,11 +392,11 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           };
         }
 
-        Color recordFontColor = hasNumStock ? Colors.black : Colors.white;
-        Color recordBgColor = hasNumStock ? Colors.black12 : Colors.white24;
+        Color recordFontColor = hasNumStock ? Colors.white : Colors.orange;
+        Color recordBgColor = hasNumStock ? Colors.white10 : Colors.black26;
 
-        Color markFontColor = hasNumStock ? Colors.white : Colors.white;
-        Color markBgColor = hasNumStock ? Colors.black : Colors.white24;
+        Color markFontColor = hasNumStock ? Colors.orange : Colors.orange;
+        Color markBgColor = hasNumStock ? Colors.white : Colors.black26;
 
         return Expanded(
           flex: 1,
@@ -407,13 +405,14 @@ class _SudokuGamePageState extends State<SudokuGamePage>
             decoration: BoxDecoration(border: BorderDirectional()),
             child: CupertinoButton(
               color: _markOpen ? markBgColor : recordBgColor,
+              borderRadius: BorderRadius.circular(99),
               padding: EdgeInsets.all(1),
               child: Text(
                 '${index + 1}',
                 style: TextStyle(
                   color: _markOpen ? markFontColor : recordFontColor,
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               onPressed: fillOnPressed,
@@ -426,9 +425,18 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     fillTools.add(Expanded(
         flex: 1,
         child: Container(
+            margin: EdgeInsets.all(2),
+            decoration: BoxDecoration(border: BorderDirectional()),
             child: CupertinoButton(
                 padding: EdgeInsets.all(8),
-                child: Image(image: eraserAssetImage, width: 40, height: 40),
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(99),
+                child: Image(
+                  image: eraserAssetImage,
+                  width: 40,
+                  height: 40,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   log.d("""
                   when ${_chooseSudokuBox + 1} is not a puzzle , then clean the choose \n
@@ -448,6 +456,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
     return Container(
       height: 40,
+      color: Colors.red,
       width: MediaQuery.of(context).size.width,
       child: Align(
         alignment: Alignment.centerLeft,
@@ -456,7 +465,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
   }
 
-  Widget _toolZone(BuildContext context) {
+  Widget _toolZone(BuildContext context, int tips) {
     // pause button tap function
     var pauseOnPressed = () {
       if (_state.status != SudokuGameStatus.gaming) {
@@ -528,7 +537,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     var exitGameText = AppLocalizations.of(context)!.exitGameText;
     var cancelText = AppLocalizations.of(context)!.cancelText;
     var pauseText = AppLocalizations.of(context)!.pauseText;
-    var tipsText = AppLocalizations.of(context)!.tipsText;
+    var tipsText = '${AppLocalizations.of(context)!.tipsText}(${tips})';
     var enableMarkText = AppLocalizations.of(context)!.enableMarkText;
     var closeMarkText = AppLocalizations.of(context)!.closeMarkText;
     var exitGameContentText = AppLocalizations.of(context)!.exitGameContentText;
@@ -567,8 +576,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
       });
     };
 
-    var _toolContentWrapper =
-        (svgPicture, label, {Color labelColor = Colors.white54}) {
+    var _toolContentWrapper = (svgPicture, label,
+        {Color labelColor = Colors.white54, bool end = false}) {
       return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         alignment: WrapAlignment.center,
@@ -577,8 +586,12 @@ class _SudokuGamePageState extends State<SudokuGamePage>
             // color: Colors.black,
             decoration: BoxDecoration(
               color: Colors.white12,
+              borderRadius: BorderRadius.circular(5),
             ),
-            padding: EdgeInsets.all(5),
+            padding: EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: 16,
+            ),
             child: SimpleShadow(child: svgPicture),
           ),
           Container(
@@ -592,7 +605,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
               style: TextStyle(
                 color: labelColor,
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -601,7 +614,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     };
 
     return Container(
-        // color: Colors.black,
+        // color: Colors.red,
         padding: EdgeInsets.all(5),
         child: Row(children: <Widget>[
           // 暂停游戏 pause game button
@@ -612,7 +625,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 child: CupertinoButton(
                   padding: EdgeInsets.all(3),
                   onPressed: pauseOnPressed,
-                  child: _toolContentWrapper(timerPauseAssetSvg, pauseText),
+                  child: _toolContentWrapper(timerPauseAssetSvg, pauseText,
+                      end: true),
                 ),
                 // child: Text(pauseText, style: TextStyle(fontSize: 15)),
               )),
@@ -652,7 +666,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   child: CupertinoButton(
                     padding: EdgeInsets.all(3),
                     onPressed: exitGameOnPressed,
-                    child: _toolContentWrapper(exitToAppAssetSvg, exitGameText),
+                    child: _toolContentWrapper(exitToAppAssetSvg, exitGameText,
+                        end: true),
                     // child: Text(exitGameText, style: TextStyle(fontSize: 15)),
                   ))),
           // 占位符，测试用
@@ -885,11 +900,11 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         ),
       );
     }
-    var textValueStyle = TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    );
+    // var textValueStyle = TextStyle(
+    //   fontSize: 18,
+    //   fontWeight: FontWeight.w700,
+    //   color: Colors.white,
+    // );
 
     return Center(
       child: Column(
@@ -967,37 +982,40 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
           /// 9 x 9 cells sudoku puzzle board
           /// the whole sudoku game draw it here
-          GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 81,
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 9),
-              itemBuilder: ((BuildContext context, int index) {
-                int num = -1;
-                if (_state.sudoku?.puzzle.length == 81) {
-                  num = _state.sudoku!.puzzle[index];
-                }
-
-                // 用户做标记
-                bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
-                    _state.mark[index].any((element) => element);
-
-                if (isUserMark) {
-                  return _markGridCellWidget(
-                      context, index, _cellOnTapBuilder(index));
-                }
-
-                return _gridCellWidget(
-                    context, index, num, _cellOnTapBuilder(index));
-              })),
+          Container(
+            color: Colors.yellow,
+            child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: 81,
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 9),
+                itemBuilder: ((BuildContext context, int index) {
+                  int num = -1;
+                  if (_state.sudoku?.puzzle.length == 81) {
+                    num = _state.sudoku!.puzzle[index];
+                  }
+            
+                  // 用户做标记
+                  bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
+                      _state.mark[index].any((element) => element);
+            
+                  if (isUserMark) {
+                    return _markGridCellWidget(
+                        context, index, _cellOnTapBuilder(index));
+                  }
+            
+                  return _gridCellWidget(
+                      context, index, num, _cellOnTapBuilder(index));
+                })),
+          ),
 
           /// user input zone
           /// use fillZone choose number fill cells or mark notes
           /// use toolZone to pause / exit game
-          Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-          _fillZone(context),
-          _toolZone(context)
+          // Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
+          // _fillZone(context),
+          _toolZone(context, _state.hint)
         ],
       ),
     );
