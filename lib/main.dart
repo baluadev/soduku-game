@@ -13,9 +13,11 @@ import 'package:sudoku/page/bootstrap.dart';
 import 'package:sudoku/page/sudoku_game.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 
+import 'configs/themes.dart';
 import 'constant.dart';
 import 'ml/detector.dart';
 import 'size_extension.dart';
+import 'splash_screen.dart';
 
 final Logger log = Logger();
 
@@ -107,12 +109,9 @@ class MyApp extends StatelessWidget {
           model: sudokuState,
           child: MaterialApp(
             title: 'Sudoku',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              scaffoldBackgroundColor: Color(0xFF0D0D0D),
-
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-            ),
+            theme: AppThemes.lightTheme, // Light mode
+            darkTheme: AppThemes.darkTheme, // Dark mode
+            themeMode: ThemeMode.system, // Tự đổi theo hệ thống
             localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -125,7 +124,7 @@ class MyApp extends StatelessWidget {
             routes: <String, WidgetBuilder>{
               "/bootstrap": (context) => bootstrapPage,
               "/newGame": (context) => sudokuGamePage,
-              "/gaming": (context) => sudokuGamePage
+              "/gaming": (context) => sudokuGamePage,
             },
           ),
         );

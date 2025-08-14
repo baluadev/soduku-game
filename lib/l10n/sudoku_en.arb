@@ -8,7 +8,7 @@
   "@menuContinueGame":{
     "description":"menu of 'continue game' button text"
   },
-  "menuAISolver" : "Sudoku Lens",
+  "menuAISolver" : "AI Solver Scanner",
   "levelCancel": "Cancel",
   "levelEasy": "Easy",
   "levelMedium": "Medium",

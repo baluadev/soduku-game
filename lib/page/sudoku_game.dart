@@ -684,19 +684,20 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
   }
 
-  /// 计算网格背景色
+ 
   Color _gridCellBgColor(int index) {
     if (index == _chooseSudokuBox) {
       // Ô đang chọn
-      return const Color(0xFF22313F); // Màu xanh đậm
+      return Color(0xFFFDFDFD);
     } else if (_correlationChooseBoxes.contains(index)) {
       // Ô liên quan
-      return const Color(0xFF1A1F24); // Xám xanh
+      return Color(0xFFEBEEEF);
     } else {
+      return Colors.transparent;
       // Các ô còn lại: xen kẽ khối 3x3 với 2 màu nền đen nhạt và rất tối
       return Matrix.getZone(index: index).isOdd
-          ? const Color(0xFF101214) // Tối trung bình
-          : const Color(0xFF0E0E0E); // Rất tối
+          ? Colors.white12
+          : Colors.black12;
     }
   }
 
@@ -712,22 +713,19 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
     int currentNum = puzzle[index];
     double fontSize = 22;
-    Color textColor = Colors.grey.shade300;
+    Color textColor = Colors.black;
     FontWeight textWeight = FontWeight.bold;
     String? fontFamily;
     bool isWrong = false;
 
     if (currentNum == -1) {
       currentNum = record[index];
-      textWeight = FontWeight.normal;
 
       if (currentNum != -1 && currentNum != solution[index]) {
         textColor = Colors.redAccent; // sai
         isWrong = true;
       } else if (currentNum != -1) {
-        textColor = Colors.white; // người dùng nhập đúng
-        fontSize = 24;
-        fontFamily = "handwriting_digits";
+        textColor = Colors.orange; // người dùng nhập đúng
       } else {
         textColor = Colors.grey.shade700; // trống
       }
@@ -751,10 +749,10 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
 
     final cell = Container(
-      margin: const EdgeInsets.all(1),
+      // margin: const EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: _gridCellBgColor(index),
-        borderRadius: BorderRadius.circular(6),
+        // borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: isWrong
               ? Colors.redAccent.withOpacity(0.5)
@@ -778,57 +776,66 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   /// 笔记网格控件
   ///
   Widget _markGridCellWidget(
-      BuildContext context, int index, GestureTapCallback onTap) {
+    BuildContext context,
+    int index,
+    GestureTapCallback onTap,
+  ) {
     Widget markGrid = InkWell(
-        highlightColor: Colors.blue,
-        customBorder: Border.all(color: Colors.blue),
-        onTap: onTap,
-        child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.all(1),
-            decoration: BoxDecoration(
-                color: _gridCellBgColor(index),
-                border: Border.all(color: Colors.black12)),
-            child: GridView.builder(
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 9,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                itemBuilder: (BuildContext context, int _index) {
-                  double fontSize = 13;
-                  int markNum =
-                      _state.mark[index][_index + 1] ? _index + 1 : -1;
-                  String markNumText = '${markNum == -1 ? "" : markNum}';
-                  var _textContainer = Text(markNumText,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: fontSize,
-                          fontStyle: FontStyle.italic,
-                          color: _chooseSudokuBox == index
-                              ? Colors.white
-                              : Color.fromARGB(255, 0x26, 0x7A, 0xBC)));
+      highlightColor: Colors.blue,
+      customBorder: Border.all(color: Colors.blue),
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        // margin: EdgeInsets.all(1),
+        decoration: BoxDecoration(
+          color: _gridCellBgColor(index),
+          border: Border.all(color: Colors.black12),
+        ),
+        child: GridView.builder(
+          padding: EdgeInsets.zero,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: 9,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+          ),
+          itemBuilder: (BuildContext context, int _index) {
+            double fontSize = 13;
+            int markNum = _state.mark[index][_index + 1] ? _index + 1 : -1;
+            String markNumText = '${markNum == -1 ? "" : markNum}';
+            var _textContainer = Text(
+              markNumText,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                  color:
+                      _chooseSudokuBox == index ? Colors.black : Colors.black),
+            );
 
-                  // 感知提示
-                  if (markNum != -1 && markNum == _perceptionNum) {
-                    _textContainer = Text(markNumText,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontStyle: FontStyle.italic,
-                          color: _chooseSudokuBox == index
-                              ? Colors.white
-                              : Color.fromARGB(255, 0x26, 0x7A, 0xBC),
-                          // 提示线
-                          decoration: TextDecoration.underline,
-                          decorationStyle: TextDecorationStyle.wavy,
-                          decorationColor: Colors.deepOrangeAccent,
-                          decorationThickness: 1.2,
-                        ));
-                  }
+            // 感知提示
+            if (markNum != -1 && markNum == _perceptionNum) {
+              _textContainer = Text(
+                markNumText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                  color:
+                      _chooseSudokuBox == index ? Colors.black : Colors.black,
+                  // 提示线
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.wavy,
+                  decorationColor: Colors.deepOrangeAccent,
+                  decorationThickness: 1.2,
+                ),
+              );
+            }
 
-                  return _textContainer;
-                })));
+            return _textContainer;
+          },
+        ),
+      ),
+    );
 
     return markGrid;
   }
@@ -916,6 +923,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
             height: 50,
             padding: EdgeInsets.all(10.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 // Expanded(
                 //   flex: 1,
@@ -926,34 +934,34 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 //     ],
                 //   ),
                 // ),
-
+                BackButton(),
                 // indicator
-                Expanded(
-                  child: Row(
-                    children: [
-                      Icon(
-                        FlutterRemix.time_line,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 5),
-                      Container(
-                        alignment: AlignmentDirectional.center,
-                        child: Text(
-                          // "${LocalizationUtils.localizationLevelName(context, _state.level!)} - ${_state.timer} - ${LocalizationUtils.localizationGameStatus(context, _state.status)}",
-                          _state.timer,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      FlutterRemix.time_line,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 5),
+                    Container(
+                      alignment: AlignmentDirectional.center,
+                      child: Text(
+                        // "${LocalizationUtils.localizationLevelName(context, _state.level!)} - ${_state.timer} - ${LocalizationUtils.localizationGameStatus(context, _state.status)}",
+                        _state.timer,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 //lifes
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: List.generate(
                     _state.life,
                     (index) => Icon(
@@ -983,38 +991,44 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           /// 9 x 9 cells sudoku puzzle board
           /// the whole sudoku game draw it here
           Container(
-            color: Colors.yellow,
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFFFEFEFE), width: 2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            margin: EdgeInsets.symmetric(horizontal: 16),
             child: GridView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: 81,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 9),
-                itemBuilder: ((BuildContext context, int index) {
-                  int num = -1;
-                  if (_state.sudoku?.puzzle.length == 81) {
-                    num = _state.sudoku!.puzzle[index];
-                  }
-            
-                  // 用户做标记
-                  bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
-                      _state.mark[index].any((element) => element);
-            
-                  if (isUserMark) {
-                    return _markGridCellWidget(
-                        context, index, _cellOnTapBuilder(index));
-                  }
-            
-                  return _gridCellWidget(
-                      context, index, num, _cellOnTapBuilder(index));
-                })),
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 81,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 9,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                int num = -1;
+                if (_state.sudoku?.puzzle.length == 81) {
+                  num = _state.sudoku!.puzzle[index];
+                }
+
+                // 用户做标记
+                bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
+                    _state.mark[index].any((element) => element);
+
+                // if (isUserMark) {
+                //   return _markGridCellWidget(
+                //       context, index, _cellOnTapBuilder(index));
+                // }
+
+                return _gridCellWidget(
+                    context, index, num, _cellOnTapBuilder(index));
+              },
+            ),
           ),
 
           /// user input zone
           /// use fillZone choose number fill cells or mark notes
           /// use toolZone to pause / exit game
-          // Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-          // _fillZone(context),
+          Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
+          _fillZone(context),
           _toolZone(context, _state.hint)
         ],
       ),
@@ -1113,28 +1127,30 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   @override
   Widget build(BuildContext context) {
     Scaffold scaffold = Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info_outline),
-            onPressed: () {
-              return _aboutDialogAction(context);
-            },
-          )
-        ],
-      ),
-      body: _willPopWidget(
-        context,
-        ScopedModelDescendant<SudokuState>(
-          builder: (context, child, model) => _bodyWidget(context),
+      backgroundColor: Color(0xFFF8F7F8),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(Icons.info_outline),
+      //       onPressed: () {
+      //         return _aboutDialogAction(context);
+      //       },
+      //     )
+      //   ],
+      // ),
+      body: SafeArea(
+        child: _willPopWidget(
+          context,
+          ScopedModelDescendant<SudokuState>(
+            builder: (context, child, model) => _bodyWidget(context),
+          ),
+          (bool didPop) {
+            if (didPop) {
+              _pause();
+            }
+          },
         ),
-        (bool didPop) {
-          if (didPop) {
-            _pause();
-          }
-        },
       ),
     );
 

@@ -9,9 +9,11 @@ import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:logger/logger.dart' hide Level;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/size_extension.dart';
+import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 import 'package:sudoku/util/localization_util.dart';
 import 'package:sudoku_dart/sudoku_dart.dart';
@@ -19,6 +21,39 @@ import 'package:sudoku_dart/sudoku_dart.dart';
 import 'ai_scan.dart';
 
 final Logger log = Logger();
+
+List levelData = [
+  {
+    'id': 0,
+    'title': 'Eggshell',
+    'subtitle': 'Beginner',
+    'icon': 'assets/image/lv1.png',
+  },
+  {
+    'id': 1,
+    'title': 'Cracked',
+    'subtitle': 'Easy',
+    'icon': 'assets/image/lv2.png',
+  },
+  {
+    'id': 2,
+    'title': 'Chick',
+    'subtitle': 'Intermediate',
+    'icon': 'assets/image/lv3.png',
+  },
+  {
+    'id': 3,
+    'title': 'Fledgeling',
+    'subtitle': 'Advanced',
+    'icon': 'assets/image/lv4.png',
+  },
+  {
+    'id': 4,
+    'title': 'Wise Owl',
+    'subtitle': 'Wise Owl',
+    'icon': 'assets/image/lv5.png',
+  },
+];
 
 class BootstrapPage extends StatefulWidget {
   BootstrapPage({Key? key, required this.title}) : super(key: key);
@@ -47,15 +82,14 @@ Widget _aiSolverButton(BuildContext context) {
           (content) => CupertinoButton(
                 color: Colors.blue,
                 child: Text(
-                  "$buttonLabel / test /",
+                  buttonLabel,
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: "montserrat",
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 onPressed: () async {
                   log.d("AI Solver Scanner");
-
                   WidgetsFlutterBinding.ensureInitialized();
 
                   final cameras = await availableCameras();
@@ -79,28 +113,42 @@ Widget _continueGameButton(BuildContext context) {
     String continueMessage =
         "${LocalizationUtils.localizationLevelName(context, state.level ?? Level.easy)} - ${state.timer}";
     return Offstage(
-        offstage: state.status != SudokuGameStatus.pause,
-        child: Container(
-          width: 300,
-          height: 80,
-          child: CupertinoButton(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      child: Text(buttonLabel,
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold))),
-                  Container(
-                      child:
-                          Text(continueMessage, style: TextStyle(fontSize: 13)))
-                ],
+      offstage: state.status != SudokuGameStatus.pause,
+      child: Container(
+        width: 300,
+        height: 80,
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.secondary),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: GestureDetector(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                child: Text(
+                  buttonLabel,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, "/gaming");
-              }),
-        ));
+              Container(
+                child: Text(
+                  continueMessage,
+                  style: TextStyle(fontSize: 13),
+                ),
+              )
+            ],
+          ),
+          onTap: () {
+            Navigator.pushNamed(context, "/gaming");
+          },
+        ),
+      ),
+    );
   });
 }
 
@@ -190,9 +238,9 @@ void _internalSudokuGenerate(List<dynamic> args) {
   Sudoku sudoku = Sudoku(puzzle);
   // Sudoku sudoku = Sudoku.generate(level);
   endTime = DateTime.now();
-  var consumingTie = endTime.millisecondsSinceEpoch - beginTime.millisecondsSinceEpoch;
-  log.d(
-      "数独生成完毕 耗时: $consumingTie'ms");
+  var consumingTie =
+      endTime.millisecondsSinceEpoch - beginTime.millisecondsSinceEpoch;
+  log.d("数独生成完毕 耗时: $consumingTie'ms");
   sendPort.send(sudoku);
 }
 
@@ -231,104 +279,192 @@ Future _sudokuGenerate(BuildContext context, Level level) async {
 }
 
 class _BootstrapPageState extends State<BootstrapPage> {
+  int selectLv = 0;
+
+  void selectLevel(int lv) {
+    selectLv = lv;
+    reloadView();
+  }
+
+  void reloadView() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Widget _buildMain() {
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size(MediaQuery.of(context).size.width, 200),
+                painter: WavePainter(),
+              ),
+              BtnRed(
+                title: 'Let’s Play!',
+                onTap: () {
+                  log.i('vo game');
+                },
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "Choose Your Challenge Level:",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              ...levelData.map((e) {
+                final id = e['id'];
+
+                return GestureDetector(
+                  onTap: () {
+                    selectLevel(id);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          e['icon'],
+                          scale: 2,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                e['title'],
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(fontSize: 32.r),
+                              ),
+                              Text(
+                                '(${e['subtitle']})',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                        fontSize: 16.r, fontFamily: 'Lato'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        selectLv == id
+                            ? Image.asset(
+                                'assets/image/on_toogle.png',
+                                scale: 2,
+                              )
+                            : Image.asset(
+                                'assets/image/off_toogle.png',
+                                scale: 2,
+                              ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget logo = Text(
-      "/ suˈdoʊku: /",
-      style: TextStyle(
-        fontFamily: "montserrat",
-        color: Colors.black,
-        fontSize: (55.0).r,
-      ),
-    );
-
-    Widget buttons = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.end,
+    Widget logo = Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          onPressed: () async {
-            var languageCode = Localizations.localeOf(context).languageCode;
-            await SoundEffect.sudokuSpeak(languageCode);
-          },
-          icon: Icon(
-            size: 18,
-            Icons.keyboard_voice_rounded,
-            color: Colors.black26,
+        Text(
+          "SUDOKU",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: (55.0).r,
+            fontWeight: FontWeight.bold,
           ),
-        )
-            .animate()
-            .fadeIn(delay: 1500.ms)
-            .then()
-            .animate(onPlay: (ctrl) => ctrl.loop(reverse: true))
-            .scaleXY(end: 1.35, duration: 600.ms, delay: 2200.ms)
-            .blurXY(end: 1.2, duration: 600.ms, delay: 2200.ms)
+        ),
+        Text(
+          "GAME & RESOLVE",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: (20.0).r,
+          ),
+        ),
       ],
     );
 
     Widget banner = Container(
       alignment: Alignment.center,
-      width: 400,
-      // color:Colors.yellow,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           logo,
-          buttons,
         ],
       ),
-    )
-        .animate()
-        .fadeIn(duration: 1500.ms)
-        .moveY(
-            delay: 800.ms, duration: 500.ms, begin: SizeConfig.screenHeight / 4)
-        .then()
-        .scaleXY(duration: 500.ms, begin: 1.30)
-        .then()
-        .animate(onPlay: (ctrl) => ctrl.repeat(reverse: false))
-        .shimmer(
-      angle: 0.65,
-      delay: 800.ms,
-      duration: 3500.ms,
-      colors: [
-        Colors.black,
-        Colors.black45,
-        Colors.white,
-        Colors.black87,
-        Colors.black,
+    );
+
+    // Widget body = Container(
+    //   color: Theme.of(context).colorScheme.background,
+    //   padding: EdgeInsets.all(25.0),
+    //   child: Center(
+    //     child: Column(
+    //       children: <Widget>[
+    //         // logo
+    //         Expanded(flex: 1, child: banner),
+    //         Expanded(
+    //           flex: 2,
+    //           child: Column(
+    //             mainAxisAlignment: MainAxisAlignment.start,
+    //             children: [
+    //               // continue the game
+    //               _continueGameButton(context),
+    //               // new game
+    //               _newGameButton(context),
+    //               // ai solver scanner
+    //               _aiSolverButton(context),
+    //             ],
+    //           ).animate().fadeIn(
+    //                 delay: 1200.ms,
+    //                 duration: 1000.ms,
+    //                 curve: Curves.bounceOut,
+    //               ),
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+    Widget body = PageView(
+      children: [
+        SplashScreen(),
       ],
     );
 
-    Widget body = Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(25.0),
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            // logo
-            Expanded(flex: 1, child: banner),
-            Expanded(
-              flex: 1,
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-                // continue the game
-                _continueGameButton(context),
-                // new game
-                _newGameButton(context),
-                // ai solver scanner
-                _aiSolverButton(context),
-              ]).animate().fadeIn(
-                      delay: 1200.ms,
-                      duration: 1000.ms,
-                      curve: Curves.bounceOut),
-            )
-          ],
+    return ScopedModelDescendant<SudokuState>(
+      builder: (context, child, model) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
         ),
+        backgroundColor: Theme.of(context).primaryColor,
+        body: _buildMain(),
       ),
     );
-
-    return ScopedModelDescendant<SudokuState>(
-        builder: (context, child, model) => Scaffold(body: body));
   }
 }
