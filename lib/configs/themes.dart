@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/size_extension.dart';
-
-const String fontFamily = 'Summary Notes';
 
 class AppThemes {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: Colors.white,
     primaryColor: Color(0xFFFFD72E),
-    fontFamily: fontFamily,
+    colorScheme: ColorScheme(
+      brightness: Brightness.light,
+      primary: Color(0xFFFFD72E),
+      onPrimary: Color(0xFFFFD72E),
+      secondary: Colors.black,
+      onSecondary: Colors.black,
+      error: Colors.red,
+      onError: Colors.red,
+      background: Color(0xFFEAEAEA),
+      onBackground: Color(0xFFEAEAEA),
+      surface: Colors.black,
+      onSurface: Colors.black,
+    ),
+    fontFamily: fontSummary,
     appBarTheme: AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
     ),
@@ -27,7 +39,7 @@ class AppThemes {
         color: Colors.black,
       ),
     ).apply(
-      fontFamily: fontFamily,
+      fontFamily: fontSummary,
     ),
   );
 
@@ -35,7 +47,20 @@ class AppThemes {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.black,
     primaryColor: Color(0xFFFFD72E),
-    fontFamily: fontFamily,
+    colorScheme: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFFFD72E),
+      onPrimary: Color(0xFFFFD72E),
+      secondary: Colors.white,
+      onSecondary: Colors.white,
+      error: Colors.red,
+      onError: Colors.red,
+      background: Color.fromARGB(255, 33, 33, 33),
+      onBackground: Color.fromARGB(255, 33, 33, 33),
+      surface: Colors.black,
+      onSurface: Colors.black,
+    ),
+    fontFamily: fontSummary,
     appBarTheme: AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.light,
     ),
@@ -53,7 +78,7 @@ class AppThemes {
         color: Colors.white,
       ),
     ).apply(
-      fontFamily: fontFamily,
+      fontFamily: fontSummary,
     ),
   );
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_remix/flutter_remix.dart';
+import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/size_extension.dart';
 
 class BtnEffect extends StatefulWidget {
@@ -70,8 +72,6 @@ class BtnRed extends StatelessWidget {
   }
 }
 
-
-
 class BtnWhite extends StatelessWidget {
   final String title;
   final VoidCallback? onTap;
@@ -94,6 +94,80 @@ class BtnWhite extends StatelessWidget {
                 .textTheme
                 .titleLarge
                 ?.copyWith(fontSize: 32.r, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BtnClose extends StatelessWidget {
+  final VoidCallback? onTap;
+  const BtnClose({super.key, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return BtnEffect(
+      onTap: onTap,
+      child: Image.asset(
+        'assets/image/close.png',
+        scale: 2,
+      ),
+    );
+  }
+}
+
+class BtnHint extends StatelessWidget {
+  final int hint;
+  final VoidCallback? onTap;
+  const BtnHint({super.key, this.onTap, required this.hint});
+
+  @override
+  Widget build(BuildContext context) {
+    return BtnEffect(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.bottomLeft,
+        children: [
+          Image.asset('assets/image/hint.png', scale: 2),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2, left: 6),
+            child: Text(
+              '$hint',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontFamily: fontLato,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BtnPause extends StatelessWidget {
+  final VoidCallback? onTap;
+  const BtnPause({
+    super.key,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BtnEffect(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            'assets/image/btn_menu.png',
+            scale: 2,
+           
+          ),
+          Icon(
+            FlutterRemix.pause_line,
+            color: Colors.black,
           ),
         ],
       ),

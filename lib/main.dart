@@ -111,7 +111,7 @@ class MyApp extends StatelessWidget {
             title: 'Sudoku',
             theme: AppThemes.lightTheme, // Light mode
             darkTheme: AppThemes.darkTheme, // Dark mode
-            themeMode: ThemeMode.system, // Tự đổi theo hệ thống
+            themeMode: ThemeMode.dark, // Tự đổi theo hệ thống
             localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,

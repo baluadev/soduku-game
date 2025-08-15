@@ -10,9 +10,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/constant.dart';
+import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/sudoku_pause_cover.dart';
+import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 import 'package:sudoku/util/localization_util.dart';
 import 'package:sudoku_dart/sudoku_dart.dart';
@@ -40,16 +43,16 @@ final ButtonStyle primaryFlatButtonStyle = TextButton.styleFrom(
   ),
 );
 
-const ideaAssetImage = AssetImage("assets/image/icon_idea.png");
+// const ideaAssetImage = AssetImage("assets/image/icon_idea.png");
 const lifeAssetImage = AssetImage("assets/image/icon_life.png");
 const logoAssetImage = AssetImage("assets/image/sudoku_logo.png");
 const eraserAssetImage = AssetImage("assets/image/icon_eraser.png");
 
-const Image ideaPng = Image(
-  image: ideaAssetImage,
-  width: 25,
-  height: 25,
-);
+// const Image ideaPng = Image(
+//   image: ideaAssetImage,
+//   width: 25,
+//   height: 25,
+// );
 const Image lifePng = Image(
   image: lifeAssetImage,
   width: 25,
@@ -198,28 +201,127 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     }
   }
 
-  /// game over trigger function
-  void _gameOver() async {
-    bool isWinner = _state.status == SudokuGameStatus.success;
-
-    // i18n
+  Widget buildFailure() {
     final String elapsedTimeText =
         AppLocalizations.of(context)!.elapsedTimeText;
-    final String winnerConclusionText =
-        AppLocalizations.of(context)!.winnerConclusionText;
     final String failureConclusionText =
         AppLocalizations.of(context)!.failureConclusionText;
     final String levelLabel =
         LocalizationUtils.localizationLevelName(context, _state.level!);
-
-    // nội dung & âm thanh
-    String title = isWinner ? "🎉 Well Done!" : "💀 Game Over";
     String conclusion =
-        (isWinner ? winnerConclusionText : failureConclusionText)
-            .replaceFirst("%level%", levelLabel);
+        failureConclusionText.replaceFirst("%level%", levelLabel);
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '💀 Game Over',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            conclusion,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "$elapsedTimeText : ${_state.timer}'s",
+            style: const TextStyle(
+              color: Colors.cyanAccent,
+              fontSize: 14,
+              fontFamily: fontLato,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.tv, color: Colors.grey),
+                tooltip: "Watch Ad (Get Extra Life)",
+                onPressed: () => Navigator.pop(context, "ad"),
+              ),
+              IconButton(
+                icon: const Icon(Icons.thumb_up, color: Colors.white),
+                tooltip: "Like Game",
+                onPressed: () {
+                  // future: show rating, share, etc.
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.exit_to_app, color: Colors.white),
+                tooltip: "Exit",
+                onPressed: () => Navigator.pop(context, "exit"),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildCompleted() {
+    final String levelLabel =
+        LocalizationUtils.localizationLevelName(context, _state.level!);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.asset('assets/image/congrats.png'),
+        Positioned(
+          top: 120,
+          child: Text(
+            levelLabel,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                fontSize: 20.r),
+          ),
+        ),
+        Positioned(
+          top: 220,
+          child: Text(
+            'Well done, Jay',
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(fontSize: 32.r),
+          ),
+        ),
+        Positioned(
+          top: 300,
+          left: 180,
+          child: Text(
+            'x10',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontSize: 32.r,
+                  fontFamily: fontLato,
+                  color: Color(0xFFFF7C27),
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// game over trigger function
+  void _gameOver() async {
+    bool isWinner = false; //_state.status == SudokuGameStatus.success;
     Function playSoundEffect =
         isWinner ? SoundEffect.solveVictory : SoundEffect.gameOver;
-
     // Giao diện trang kết quả
     PageRouteBuilder gameOverPageRouteBuilder = PageRouteBuilder(
       opaque: false,
@@ -227,77 +329,23 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         playSoundEffect();
 
         Widget gameOverWidget = Scaffold(
-          backgroundColor: Colors.black.withOpacity(0.8),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1C1C1E),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: isWinner
-                            ? Colors.lightGreenAccent
-                            : Colors.redAccent,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      conclusion,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      "$elapsedTimeText : ${_state.timer}'s",
-                      style: const TextStyle(
-                        color: Colors.cyanAccent,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        if (!isWinner)
-                          IconButton(
-                            icon: const Icon(Icons.tv, color: Colors.grey),
-                            tooltip: "Watch Ad (Get Extra Life)",
-                            onPressed: () => Navigator.pop(context, "ad"),
-                          ),
-                        IconButton(
-                          icon: const Icon(Icons.thumb_up, color: Colors.white),
-                          tooltip: "Like Game",
-                          onPressed: () {
-                            // future: show rating, share, etc.
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.exit_to_app,
-                              color: Colors.white),
-                          tooltip: "Exit",
-                          onPressed: () => Navigator.pop(context, "exit"),
-                        ),
-                      ],
-                    )
-                  ],
+          backgroundColor: Color(0xFFEF3349),
+          body: Stack(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: isWinner ? buildCompleted() : buildFailure(),
                 ),
               ),
-            ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Image.asset(
+                  'assets/image/owl.png',
+                  scale: 2,
+                ),
+              )
+            ],
           ),
         );
 
@@ -392,20 +440,30 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           };
         }
 
-        Color recordFontColor = hasNumStock ? Colors.white : Colors.orange;
-        Color recordBgColor = hasNumStock ? Colors.white10 : Colors.black26;
+        Color recordFontColor = hasNumStock
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).colorScheme.primary;
+        Color recordBgColor = hasNumStock
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Theme.of(context).scaffoldBackgroundColor.withOpacity(0.2);
 
-        Color markFontColor = hasNumStock ? Colors.orange : Colors.orange;
-        Color markBgColor = hasNumStock ? Colors.white : Colors.black26;
+        Color markFontColor = hasNumStock
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.primary;
+        Color markBgColor = hasNumStock
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).scaffoldBackgroundColor.withOpacity(0.2);
 
         return Expanded(
           flex: 1,
           child: Container(
-            margin: EdgeInsets.all(2),
-            decoration: BoxDecoration(border: BorderDirectional()),
+            margin: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
             child: CupertinoButton(
               color: _markOpen ? markBgColor : recordBgColor,
-              borderRadius: BorderRadius.circular(99),
               padding: EdgeInsets.all(1),
               child: Text(
                 '${index + 1}',
@@ -413,6 +471,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   color: _markOpen ? markFontColor : recordFontColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
+                  fontFamily: fontLato,
                 ),
               ),
               onPressed: fillOnPressed,
@@ -425,17 +484,19 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     fillTools.add(Expanded(
         flex: 1,
         child: Container(
-            margin: EdgeInsets.all(2),
-            decoration: BoxDecoration(border: BorderDirectional()),
+            margin: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
             child: CupertinoButton(
-                padding: EdgeInsets.all(8),
-                color: Colors.white10,
-                borderRadius: BorderRadius.circular(99),
+                padding: EdgeInsets.all(10),
+                color: Theme.of(context).scaffoldBackgroundColor,
                 child: Image(
                   image: eraserAssetImage,
-                  width: 40,
-                  height: 40,
-                  color: Colors.white,
+                  width: 20,
+                  height: 20,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 onPressed: () {
                   log.d("""
@@ -455,14 +516,72 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 }))));
 
     return Container(
-      height: 40,
-      color: Colors.red,
       width: MediaQuery.of(context).size.width,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Row(children: fillTools),
+      padding: EdgeInsets.symmetric(horizontal: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(children: fillTools.sublist(0, (fillTools.length / 2).ceil())),
+          Row(children: fillTools.sublist((fillTools.length / 2).ceil())),
+        ],
       ),
     );
+  }
+
+  void tip() {
+    log.d("top tips button");
+    int hint = _state.hint;
+    if (hint <= 0) {
+      return;
+    }
+    List<int> puzzle = _state.sudoku!.puzzle;
+    List<int> solution = _state.sudoku!.solution;
+    List<int> record = _state.record;
+    // random point tips
+    int randomBeginPoint = new Random().nextInt(puzzle.length);
+    for (int i = 0; i < puzzle.length; i++) {
+      int index = (i + randomBeginPoint) % puzzle.length;
+      if (puzzle[index] == -1 && record[index] == -1) {
+        SoundEffect.answerTips();
+        _state.setRecord(index, solution[index]);
+        _state.hintLoss();
+        _updateChooseState(index);
+        _gameStackCount();
+
+        // update choose state
+        _updateChooseState(index);
+        return;
+      }
+    }
+  }
+
+  void pauseGame() {
+    if (_state.status != SudokuGameStatus.gaming) {
+      return;
+    }
+
+    // 标记手动暂停
+    setState(() {
+      _manualPause = true;
+    });
+
+    _pause();
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (BuildContext context, _, __) {
+              return SudokuPauseCoverPage();
+            })).then((_) {
+      _gaming();
+
+      // 解除手动暂停
+      setState(() {
+        _manualPause = false;
+      });
+    });
   }
 
   Widget _toolZone(BuildContext context, int tips) {
@@ -684,20 +803,17 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
   }
 
- 
   Color _gridCellBgColor(int index) {
     if (index == _chooseSudokuBox) {
       // Ô đang chọn
-      return Color(0xFFFDFDFD);
+      return Theme.of(context).primaryColor;
     } else if (_correlationChooseBoxes.contains(index)) {
       // Ô liên quan
-      return Color(0xFFEBEEEF);
+      return Theme.of(context).primaryColor.withOpacity(0.2);
     } else {
-      return Colors.transparent;
-      // Các ô còn lại: xen kẽ khối 3x3 với 2 màu nền đen nhạt và rất tối
       return Matrix.getZone(index: index).isOdd
-          ? Colors.white12
-          : Colors.black12;
+          ? Theme.of(context).colorScheme.secondary.withOpacity(0.2)
+          : Colors.transparent;
     }
   }
 
@@ -713,9 +829,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
     int currentNum = puzzle[index];
     double fontSize = 22;
-    Color textColor = Colors.black;
+    Color textColor = Theme.of(context).colorScheme.secondary;
     FontWeight textWeight = FontWeight.bold;
-    String? fontFamily;
     bool isWrong = false;
 
     if (currentNum == -1) {
@@ -725,7 +840,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         textColor = Colors.redAccent; // sai
         isWrong = true;
       } else if (currentNum != -1) {
-        textColor = Colors.orange; // người dùng nhập đúng
+        textColor = Colors.blue; // người dùng nhập đúng
       } else {
         textColor = Colors.grey.shade700; // trống
       }
@@ -739,7 +854,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: textWeight,
-        fontFamily: fontFamily,
+        fontFamily: fontLato,
         color: textColor,
         decoration: isPerceived ? TextDecoration.underline : null,
         decorationStyle: isPerceived ? TextDecorationStyle.wavy : null,
@@ -819,6 +934,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
+                  fontFamily: fontLato,
                   fontWeight: FontWeight.bold,
                   color:
                       _chooseSudokuBox == index ? Colors.black : Colors.black,
@@ -896,7 +1012,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   Widget _bodyWidget(BuildContext context) {
     if (_state.sudoku == null) {
       return Container(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.background,
         alignment: Alignment.center,
         child: Center(
           child: Text(
@@ -907,58 +1023,17 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         ),
       );
     }
-    // var textValueStyle = TextStyle(
-    //   fontSize: 18,
-    //   fontWeight: FontWeight.w700,
-    //   color: Colors.white,
-    // );
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          /// status zone
-          /// life / tips / timer on here
           Container(
             height: 50,
             padding: EdgeInsets.all(10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                // Expanded(
-                //   flex: 1,
-                //   child: Row(
-                //     children: <Widget>[
-                //       lifePng,
-                //       Text(" x ${_state.life}", style: textValueStyle)
-                //     ],
-                //   ),
-                // ),
-                BackButton(),
-                // indicator
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      FlutterRemix.time_line,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 5),
-                    Container(
-                      alignment: AlignmentDirectional.center,
-                      child: Text(
-                        // "${LocalizationUtils.localizationLevelName(context, _state.level!)} - ${_state.timer} - ${LocalizationUtils.localizationGameStatus(context, _state.status)}",
-                        _state.timer,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
                 //lifes
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -970,20 +1045,6 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                     ),
                   ),
                 )
-
-                // tips
-                // Expanded(
-                //   flex: 1,
-                //   child: Container(
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.end,
-                //       children: <Widget>[
-                //         ideaPng,
-                //         Text(" x ${_state.hint}", style: textValueStyle)
-                //       ],
-                //     ),
-                //   ),
-                // )
               ],
             ),
           ),
@@ -992,16 +1053,22 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           /// the whole sudoku game draw it here
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Color(0xFFFEFEFE), width: 2),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.secondary,
+                width: 1,
+              ),
+              // borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).scaffoldBackgroundColor,
             ),
             margin: EdgeInsets.symmetric(horizontal: 16),
             child: GridView.builder(
+              padding: EdgeInsets.zero,
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: 81,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 9,
+                mainAxisSpacing: 0,
               ),
               itemBuilder: (BuildContext context, int index) {
                 int num = -1;
@@ -1013,10 +1080,10 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
                     _state.mark[index].any((element) => element);
 
-                // if (isUserMark) {
-                //   return _markGridCellWidget(
-                //       context, index, _cellOnTapBuilder(index));
-                // }
+                if (isUserMark) {
+                  return _markGridCellWidget(
+                      context, index, _cellOnTapBuilder(index));
+                }
 
                 return _gridCellWidget(
                     context, index, num, _cellOnTapBuilder(index));
@@ -1029,7 +1096,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           /// use toolZone to pause / exit game
           Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
           _fillZone(context),
-          _toolZone(context, _state.hint)
+          // _toolZone(context, _state.hint)
         ],
       ),
     );
@@ -1126,34 +1193,58 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
   @override
   Widget build(BuildContext context) {
-    Scaffold scaffold = Scaffold(
-      backgroundColor: Color(0xFFF8F7F8),
-      // appBar: AppBar(
-      //   title: Text(widget.title),
-      //   actions: [
-      //     IconButton(
-      //       icon: Icon(Icons.info_outline),
-      //       onPressed: () {
-      //         return _aboutDialogAction(context);
-      //       },
-      //     )
-      //   ],
-      // ),
-      body: SafeArea(
-        child: _willPopWidget(
-          context,
-          ScopedModelDescendant<SudokuState>(
-            builder: (context, child, model) => _bodyWidget(context),
+    return _willPopWidget(
+      context,
+      ScopedModelDescendant<SudokuState>(
+        builder: (context, child, model) => Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            leading: BtnClose(
+              onTap: () => Navigator.of(context).pop(),
+            ),
+            centerTitle: true,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FlutterRemix.time_line,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                const SizedBox(width: 5),
+                Container(
+                  alignment: AlignmentDirectional.center,
+                  child: Text(
+                    "${_state.timer} - ${LocalizationUtils.localizationLevelName(context, _state.level!)}",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontFamily: fontLato,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14.r,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              BtnHint(
+                hint: _state.hint,
+                onTap: tip,
+              ),
+              SizedBox(width: 8),
+              BtnPause(
+                onTap: pauseGame,
+              ),
+              SizedBox(width: 16),
+            ],
           ),
-          (bool didPop) {
-            if (didPop) {
-              _pause();
-            }
-          },
+          body: _bodyWidget(context),
         ),
       ),
+      (bool didPop) {
+        if (didPop) {
+          _pause();
+        }
+      },
     );
-
-    return scaffold;
   }
 }

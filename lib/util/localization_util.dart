@@ -7,14 +7,16 @@ import 'package:sudoku_dart/sudoku_dart.dart';
 class LocalizationUtils {
   static String localizationLevelName(BuildContext context, Level level) {
     switch (level) {
-      case Level.easy:
-        return AppLocalizations.of(context)!.levelEasy;
-      case Level.medium:
-        return AppLocalizations.of(context)!.levelMedium;
-      case Level.hard:
-        return AppLocalizations.of(context)!.levelHard;
-      case Level.expert:
-        return AppLocalizations.of(context)!.levelExpert;
+      case Level.eggshell:
+        return AppLocalizations.of(context)!.levelEggshell;
+      case Level.cracked:
+        return AppLocalizations.of(context)!.levelCracked;
+      case Level.chick:
+        return AppLocalizations.of(context)!.levelChick;
+      case Level.fledgeling:
+        return AppLocalizations.of(context)!.levelFledgeling;
+      case Level.wiseowl:
+        return AppLocalizations.of(context)!.levelWiseowl;
     }
   }
 

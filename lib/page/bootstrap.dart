@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:logger/logger.dart' hide Level;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/native/sudoku.dart';
@@ -111,7 +112,7 @@ Widget _continueGameButton(BuildContext context) {
   return ScopedModelDescendant<SudokuState>(builder: (context, child, state) {
     String buttonLabel = AppLocalizations.of(context)!.menuContinueGame;
     String continueMessage =
-        "${LocalizationUtils.localizationLevelName(context, state.level ?? Level.easy)} - ${state.timer}";
+        "${LocalizationUtils.localizationLevelName(context, state.level ?? Level.eggshell)} - ${state.timer}";
     return Offstage(
       offstage: state.status != SudokuGameStatus.pause,
       child: Container(
@@ -306,8 +307,11 @@ class _BootstrapPageState extends State<BootstrapPage> {
               ),
               BtnRed(
                 title: 'Let’s Play!',
-                onTap: () {
-                  log.i('vo game');
+                onTap: () async {
+                  final level =
+                      Level.values.where((e) => e.index == selectLv).first;
+                  await _sudokuGenerate(context, level);
+                  Navigator.pushNamed(context, "/gaming");
                 },
               ),
             ],
@@ -321,7 +325,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
             children: [
               Text(
                 "Choose Your Challenge Level:",
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black),
               ),
               const SizedBox(height: 12),
               ...levelData.map((e) {
@@ -351,7 +355,8 @@ class _BootstrapPageState extends State<BootstrapPage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge
-                                    ?.copyWith(fontSize: 32.r),
+                                    ?.copyWith(
+                                        fontSize: 32.r, color: Colors.black),
                               ),
                               Text(
                                 '(${e['subtitle']})',
@@ -359,7 +364,10 @@ class _BootstrapPageState extends State<BootstrapPage> {
                                     .textTheme
                                     .titleSmall
                                     ?.copyWith(
-                                        fontSize: 16.r, fontFamily: 'Lato'),
+                                      fontSize: 16.r,
+                                      fontFamily: fontLato,
+                                      color: Colors.black,
+                                    ),
                               ),
                             ],
                           ),
@@ -369,10 +377,12 @@ class _BootstrapPageState extends State<BootstrapPage> {
                             ? Image.asset(
                                 'assets/image/on_toogle.png',
                                 scale: 2,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                               )
                             : Image.asset(
                                 'assets/image/off_toogle.png',
                                 scale: 2,
+                                 color: Theme.of(context).scaffoldBackgroundColor,
                               ),
                       ],
                     ),

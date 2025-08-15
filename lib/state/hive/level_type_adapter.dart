@@ -18,6 +18,6 @@ class SudokuLevelAdapter extends TypeAdapter<Level> {
         return level;
       }
     }
-    return Level.easy;
+    return Level.eggshell;
   }
 }
