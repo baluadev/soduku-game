@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: CustomPaint(
               size: Size(MediaQuery.of(context).size.width, 200),
-              painter: WavePainter(),
+              painter: WavePainter(Theme.of(context).scaffoldBackgroundColor),
             ),
           ),
           Center(
@@ -43,9 +43,12 @@ class SplashScreen extends StatelessWidget {
 }
 
 class WavePainter extends CustomPainter {
+  final Color color;
+  const WavePainter(this.color);
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white;
+    final paint = Paint()..color = color;
 
     final path = Path();
     // Bắt đầu từ góc trên bên trái

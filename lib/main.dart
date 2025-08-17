@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/bootstrap.dart';
 import 'package:sudoku/page/sudoku_game.dart';
@@ -16,20 +19,39 @@ import 'package:sudoku/state/sudoku_state.dart';
 import 'configs/themes.dart';
 import 'constant.dart';
 import 'ml/detector.dart';
+import 'models/user_profile.dart';
+import 'page/enter_name.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
 
 final Logger log = Logger();
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserProfileAdapter());
+  Hive.registerAdapter(GameHistoryAdapter());
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  SudokuState? _sudokuState;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _sudokuState = await _loadState();
+      setState(() {});
+    });
+  }
+
   // firebase init
   _firebaseInit() async {
     if (!Constant.enableGoogleFirebase) {
@@ -74,61 +96,46 @@ class MyApp extends StatelessWidget {
     await _firebaseInit();
     await _soundEffectWarmedUp();
     await _modelWarmedUp();
+    await UserService.inst.init();
     return await SudokuState.resumeFromDB();
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context, 390, 844);
-    return FutureBuilder<SudokuState>(
-      future: _loadState(),
-      builder: (context, AsyncSnapshot<SudokuState> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-              color: Colors.white,
-              alignment: Alignment.center,
-              child: Center(
-                child: Text('Sudoku Application initializing...',
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                    textDirection: TextDirection.ltr),
-              ));
-        }
-        if (snapshot.hasError) {
-          log.w("here is builder future throws error you should see it");
-          final e = snapshot.error;
-          final stackTrace = snapshot.stackTrace;
-          log.w(e, stackTrace: stackTrace);
-        }
-        SudokuState sudokuState = snapshot.data ?? SudokuState();
-        BootstrapPage bootstrapPage = BootstrapPage(title: "Loading");
-        SudokuGamePage sudokuGamePage = SudokuGamePage(
-          title: "Sudoku",
-        );
 
-        return ScopedModel<SudokuState>(
-          model: sudokuState,
-          child: MaterialApp(
-            title: 'Sudoku',
-            theme: AppThemes.lightTheme, // Light mode
-            darkTheme: AppThemes.darkTheme, // Dark mode
-            themeMode: ThemeMode.dark, // Tự đổi theo hệ thống
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate
-            ],
-            // locale: Locale("zh"), // i18n debug
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: bootstrapPage,
-            routes: <String, WidgetBuilder>{
-              "/bootstrap": (context) => bootstrapPage,
-              "/newGame": (context) => sudokuGamePage,
-              "/gaming": (context) => sudokuGamePage,
-            },
-          ),
-        );
-      },
+    BootstrapPage bootstrapPage = BootstrapPage(title: "Loading");
+    SudokuGamePage sudokuGamePage = SudokuGamePage(
+      title: "Sudoku",
+    );
+
+    final enter = EnterName();
+    return ScopedModel<SudokuState>(
+      model: _sudokuState ?? SudokuState.newSudokuState(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Sudoku Hatchling',
+        theme: AppThemes.lightTheme, // Light mode
+        darkTheme: AppThemes.darkTheme, // Dark mode
+        themeMode: ThemeMode.system, // Tự đổi theo hệ thống
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        locale: Locale("en"), // i18n debug
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: _sudokuState != null
+            ? BootstrapPage(title: "Loading")
+            : SplashScreen(),
+        routes: <String, WidgetBuilder>{
+          "/bootstrap": (context) => bootstrapPage,
+          "/newGame": (context) => sudokuGamePage,
+          "/gaming": (context) => sudokuGamePage,
+          "/enterName": (context) => enter,
+        },
+      ),
     );
   }
 }

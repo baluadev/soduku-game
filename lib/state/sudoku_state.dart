@@ -5,7 +5,7 @@ import 'package:sprintf/sprintf.dart';
 import 'package:sudoku/constant.dart';
 import 'package:sudoku/state/hive/level_type_adapter.dart';
 import 'package:sudoku/state/hive/sudoku_type_adapter.dart';
-import 'package:sudoku_dart/sudoku_dart.dart';
+import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 
 part 'sudoku_state.g.dart';
 

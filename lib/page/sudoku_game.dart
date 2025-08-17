@@ -17,8 +17,8 @@ import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/sudoku_pause_cover.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/state/sudoku_state.dart';
+import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:sudoku/util/localization_util.dart';
-import 'package:sudoku_dart/sudoku_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final Logger log = Logger();
@@ -250,18 +250,18 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(
-                icon: const Icon(Icons.tv, color: Colors.grey),
-                tooltip: "Watch Ad (Get Extra Life)",
-                onPressed: () => Navigator.pop(context, "ad"),
-              ),
-              IconButton(
-                icon: const Icon(Icons.thumb_up, color: Colors.white),
-                tooltip: "Like Game",
-                onPressed: () {
-                  // future: show rating, share, etc.
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.tv, color: Colors.grey),
+              //   tooltip: "Watch Ad (Get Extra Life)",
+              //   onPressed: () => Navigator.pop(context, "ad"),
+              // ),
+              // IconButton(
+              //   icon: const Icon(Icons.thumb_up, color: Colors.white),
+              //   tooltip: "Like Game",
+              //   onPressed: () {
+              //     // future: show rating, share, etc.
+              //   },
+              // ),
               IconButton(
                 icon: const Icon(Icons.exit_to_app, color: Colors.white),
                 tooltip: "Exit",
@@ -319,7 +319,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
   /// game over trigger function
   void _gameOver() async {
-    bool isWinner = false; //_state.status == SudokuGameStatus.success;
+    bool isWinner = _state.status == SudokuGameStatus.success;
     Function playSoundEffect =
         isWinner ? SoundEffect.solveVictory : SoundEffect.gameOver;
     // Giao diện trang kết quả

@@ -10,7 +10,7 @@ import 'package:logger/logger.dart';
 import 'package:sudoku/ml/yolov8/yolov8_output.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/page/ai_detection_painter.dart';
-import 'package:sudoku_dart/sudoku_dart.dart';
+import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 
 Logger log = Logger();
 

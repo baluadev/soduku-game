@@ -12,12 +12,13 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
+import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
+import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:sudoku/util/localization_util.dart';
-import 'package:sudoku_dart/sudoku_dart.dart';
 
 import 'ai_scan.dart';
 
@@ -303,7 +304,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
             children: [
               CustomPaint(
                 size: Size(MediaQuery.of(context).size.width, 200),
-                painter: WavePainter(),
+                painter: WavePainter(Theme.of(context).scaffoldBackgroundColor)
               ),
               BtnRed(
                 title: 'Let’s Play!',
@@ -325,7 +326,10 @@ class _BootstrapPageState extends State<BootstrapPage> {
             children: [
               Text(
                 "Choose Your Challenge Level:",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: Colors.black),
               ),
               const SizedBox(height: 12),
               ...levelData.map((e) {
@@ -377,12 +381,14 @@ class _BootstrapPageState extends State<BootstrapPage> {
                             ? Image.asset(
                                 'assets/image/on_toogle.png',
                                 scale: 2,
-                                color: Theme.of(context).scaffoldBackgroundColor,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                               )
                             : Image.asset(
                                 'assets/image/off_toogle.png',
                                 scale: 2,
-                                 color: Theme.of(context).scaffoldBackgroundColor,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                               ),
                       ],
                     ),
@@ -398,82 +404,16 @@ class _BootstrapPageState extends State<BootstrapPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget logo = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          "SUDOKU",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
-            fontSize: (55.0).r,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          "GAME & RESOLVE",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
-            fontSize: (20.0).r,
-          ),
-        ),
-      ],
-    );
-
-    Widget banner = Container(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          logo,
-        ],
-      ),
-    );
-
-    // Widget body = Container(
-    //   color: Theme.of(context).colorScheme.background,
-    //   padding: EdgeInsets.all(25.0),
-    //   child: Center(
-    //     child: Column(
-    //       children: <Widget>[
-    //         // logo
-    //         Expanded(flex: 1, child: banner),
-    //         Expanded(
-    //           flex: 2,
-    //           child: Column(
-    //             mainAxisAlignment: MainAxisAlignment.start,
-    //             children: [
-    //               // continue the game
-    //               _continueGameButton(context),
-    //               // new game
-    //               _newGameButton(context),
-    //               // ai solver scanner
-    //               _aiSolverButton(context),
-    //             ],
-    //           ).animate().fadeIn(
-    //                 delay: 1200.ms,
-    //                 duration: 1000.ms,
-    //                 curve: Curves.bounceOut,
-    //               ),
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
-
-    Widget body = PageView(
-      children: [
-        SplashScreen(),
-      ],
-    );
-
     return ScopedModelDescendant<SudokuState>(
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
         ),
         backgroundColor: Theme.of(context).primaryColor,
-        body: _buildMain(),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: _buildMain(),
+        ),
       ),
     );
   }

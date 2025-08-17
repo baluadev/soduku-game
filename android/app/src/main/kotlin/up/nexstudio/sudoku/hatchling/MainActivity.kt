@@ -1,4 +1,4 @@
-package com.sevlow.app.sudoku
+package up.nexstudio.sudoku.hatchling
 
 import io.flutter.embedding.android.FlutterActivity
 

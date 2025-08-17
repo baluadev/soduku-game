@@ -174,3 +174,32 @@ class BtnPause extends StatelessWidget {
     );
   }
 }
+
+class BtnSettings extends StatelessWidget {
+  final VoidCallback? onTap;
+  const BtnSettings({
+    super.key,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BtnEffect(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            'assets/image/btn_menu.png',
+            scale: 2,
+           
+          ),
+          Icon(
+            FlutterRemix.user_settings_line,
+            color: Colors.black,
+          ),
+        ],
+      ),
+    );
+  }
+}

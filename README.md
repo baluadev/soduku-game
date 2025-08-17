@@ -124,7 +124,7 @@ in Xcode,open `./ios/Runner.xcworkspace` to view your app's settings
 select the `Runner` project in the Xcode project navigator. then in the main view sidebar,select the `Runner` target and select the `Identity` tab,in the `Signing` section change `Team` and `Bundle Identifier`
 
 more information pls reference official website : https://flutter.dev/docs/deployment/ios
-
+dart run opencv_dart:setup ios --arch os64
 ## build
 
 ```shell
@@ -139,5 +139,6 @@ $> flutter build apk
 [![Star History Chart](https://api.star-history.com/svg?repos=einsitang/sudoku-flutter&type=Date)](https://star-history.com/#einsitang/sudoku-flutter&Date)
 
 ## the end
+
 
 thanks for visit this repository , wish you can like it and star it :kissing_heart:
