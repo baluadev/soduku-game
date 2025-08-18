@@ -20,13 +20,16 @@ class UserProfile extends HiveObject {
   @HiveField(4)
   int gamesLost;
 
-  UserProfile({
-    required this.name,
-    this.totalPoints = 0,
-    this.gamesPlayed = 0,
-    this.gamesWon = 0,
-    this.gamesLost = 0,
-  });
+  @HiveField(4)
+  bool removeAds;
+
+  UserProfile(
+      {required this.name,
+      this.totalPoints = 0,
+      this.gamesPlayed = 0,
+      this.gamesWon = 0,
+      this.gamesLost = 0,
+      this.removeAds = false});
 }
 
 @HiveType(typeId: 11)
@@ -59,7 +62,7 @@ class UserService {
   static final UserService inst = UserService._internal();
   factory UserService() => inst;
   UserService._internal();
-  
+
   static const userProfileBox = 'user_profile_box';
   static const gameHistoryBox = 'game_history_box';
 
@@ -82,6 +85,20 @@ class UserService {
     final profile = UserProfile(name: name);
     await _profileBox.clear();
     await _profileBox.add(profile);
+  }
+
+  //remove ads
+  bool isAdsRemoved() {
+    final profile = getProfile();
+    return profile?.removeAds ?? false;
+  }
+
+  void setAdsRemoved(bool value) {
+    final profile = getProfile();
+    if (profile != null) {
+      profile.removeAds = value;
+      profile.save();
+    }
   }
 
   // Cập nhật khi hoàn thành ván

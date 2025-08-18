@@ -18,7 +18,7 @@ class _EggLoadingState extends State<EggLoading> with TickerProviderStateMixin {
 
     _controller1 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 460),
+      duration: const Duration(milliseconds: 500),
     )..repeat(reverse: true);
 
     _controller2 = AnimationController(
@@ -28,7 +28,7 @@ class _EggLoadingState extends State<EggLoading> with TickerProviderStateMixin {
 
     _controller3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 450),
     )..repeat(reverse: true);
   }
 
@@ -41,7 +41,7 @@ class _EggLoadingState extends State<EggLoading> with TickerProviderStateMixin {
   }
 
   Widget _buildEgg(AnimationController controller, String asset) {
-    final bounce = Tween<double>(begin: 0, end: -50).animate(
+    final bounce = Tween<double>(begin: 0, end: -10).animate(
       CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
 
@@ -72,7 +72,8 @@ class _EggLoadingState extends State<EggLoading> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SizedBox(
+      height: 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

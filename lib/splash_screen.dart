@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'effect/egg_loading.dart';
+
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
@@ -35,6 +37,10 @@ class SplashScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: EggLoading(),
           ),
         ],
       ),

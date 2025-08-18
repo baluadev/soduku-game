@@ -14,6 +14,7 @@ import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/constant.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
+import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/page/sudoku_pause_cover.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/state/sudoku_state.dart';
@@ -294,7 +295,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         Positioned(
           top: 220,
           child: Text(
-            'Well done, Jay',
+            'Well done, ${UserService.inst.getProfile()?.name ?? ''}',
             style: Theme.of(context)
                 .textTheme
                 .labelLarge
@@ -311,6 +312,16 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   fontFamily: fontLato,
                   color: Color(0xFFFF7C27),
                 ),
+          ),
+        ),
+        Positioned(
+          bottom: 20,
+          child: BtnRed(
+            title: 'Continue',
+            scale: 3,
+            onTap: () {
+              Navigator.pop(context, "exit");
+            },
           ),
         ),
       ],

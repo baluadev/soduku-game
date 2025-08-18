@@ -11,6 +11,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/buttons.dart';
+import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
@@ -250,18 +251,24 @@ Future _sudokuGenerate(BuildContext context, Level level) async {
   String sudokuGenerateText = AppLocalizations.of(context)!.sudokuGenerateText;
 
   showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-          child: Container(
-              padding: EdgeInsets.all(10),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                CircularProgressIndicator(),
-                Container(
-                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: Text("/ $sudokuGenerateText /",
-                        style: TextStyle(fontSize: 13)))
-              ]))));
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => Dialog(
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EggLoading(),
+            Container(
+                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                child: Text("$sudokuGenerateText ...",
+                    style: TextStyle(fontSize: 13)))
+          ],
+        ),
+      ),
+    ),
+  );
 
   ReceivePort receivePort = ReceivePort();
 
@@ -303,9 +310,9 @@ class _BootstrapPageState extends State<BootstrapPage> {
             alignment: Alignment.center,
             children: [
               CustomPaint(
-                size: Size(MediaQuery.of(context).size.width, 200),
-                painter: WavePainter(Theme.of(context).scaffoldBackgroundColor)
-              ),
+                  size: Size(MediaQuery.of(context).size.width, 200),
+                  painter:
+                      WavePainter(Theme.of(context).scaffoldBackgroundColor)),
               BtnRed(
                 title: 'Let’s Play!',
                 onTap: () async {

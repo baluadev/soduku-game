@@ -36,7 +36,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 35
         multiDexEnabled true
-        versionCode 20250817
+        versionCode 20250818
         versionName "1.0.0"
 
         ndk {

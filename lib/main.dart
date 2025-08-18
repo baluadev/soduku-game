@@ -117,7 +117,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Sudoku Hatchling',
         theme: AppThemes.lightTheme, // Light mode
         darkTheme: AppThemes.darkTheme, // Dark mode
-        themeMode: ThemeMode.system, // Tự đổi theo hệ thống
+        themeMode: ThemeMode.dark, // Tự đổi theo hệ thống
         localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

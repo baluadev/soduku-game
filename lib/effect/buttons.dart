@@ -45,8 +45,14 @@ class _BtnEffectState extends State<BtnEffect> {
 
 class BtnRed extends StatelessWidget {
   final String title;
+  final double? scale;
   final VoidCallback? onTap;
-  const BtnRed({super.key, required this.title, this.onTap});
+  const BtnRed({
+    super.key,
+    required this.title,
+    this.onTap,
+    this.scale = 2,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +63,7 @@ class BtnRed extends StatelessWidget {
         children: [
           Image.asset(
             'assets/image/btn_red.png',
-            scale: 2,
+            scale: scale,
           ),
           Text(
             title,
@@ -163,7 +169,6 @@ class BtnPause extends StatelessWidget {
           Image.asset(
             'assets/image/btn_menu.png',
             scale: 2,
-           
           ),
           Icon(
             FlutterRemix.pause_line,
@@ -192,7 +197,6 @@ class BtnSettings extends StatelessWidget {
           Image.asset(
             'assets/image/btn_menu.png',
             scale: 2,
-           
           ),
           Icon(
             FlutterRemix.user_settings_line,
