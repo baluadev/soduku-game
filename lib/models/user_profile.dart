@@ -20,16 +20,25 @@ class UserProfile extends HiveObject {
   @HiveField(4)
   int gamesLost;
 
-  @HiveField(4)
-  bool removeAds;
+  @HiveField(5)
+  bool? removeAds;
 
-  UserProfile(
-      {required this.name,
-      this.totalPoints = 0,
-      this.gamesPlayed = 0,
-      this.gamesWon = 0,
-      this.gamesLost = 0,
-      this.removeAds = false});
+  @HiveField(6)
+  bool? darkMode;
+
+  @HiveField(7)
+  bool? enableSound;
+
+  UserProfile({
+    required this.name,
+    this.totalPoints = 0,
+    this.gamesPlayed = 0,
+    this.gamesWon = 0,
+    this.gamesLost = 0,
+    this.removeAds = false,
+    this.darkMode = false,
+    this.enableSound = false,
+  });
 }
 
 @HiveType(typeId: 11)
@@ -85,6 +94,34 @@ class UserService {
     final profile = UserProfile(name: name);
     await _profileBox.clear();
     await _profileBox.add(profile);
+  }
+
+  //darkMode
+  bool darkMode() {
+    final profile = getProfile();
+    return profile?.darkMode ?? false;
+  }
+
+  void toogleDarkMode(bool value) {
+    final profile = getProfile();
+    if (profile != null) {
+      profile.darkMode = value;
+      profile.save();
+    }
+  }
+
+  //sound
+  bool enableSound() {
+    final profile = getProfile();
+    return profile?.enableSound ?? false;
+  }
+
+  void toogleEnableSound(bool value) {
+    final profile = getProfile();
+    if (profile != null) {
+      profile.enableSound = value;
+      profile.save();
+    }
   }
 
   //remove ads

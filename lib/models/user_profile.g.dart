@@ -22,13 +22,16 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       gamesPlayed: fields[2] as int,
       gamesWon: fields[3] as int,
       gamesLost: fields[4] as int,
+      removeAds: fields[5] as bool?,
+      darkMode: fields[6] as bool?,
+      enableSound: fields[7] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +41,13 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(3)
       ..write(obj.gamesWon)
       ..writeByte(4)
-      ..write(obj.gamesLost);
+      ..write(obj.gamesLost)
+      ..writeByte(5)
+      ..write(obj.removeAds)
+      ..writeByte(6)
+      ..write(obj.darkMode)
+      ..writeByte(7)
+      ..write(obj.enableSound);
   }
 
   @override

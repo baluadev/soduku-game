@@ -6,11 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/bootstrap.dart';
 import 'package:sudoku/page/sudoku_game.dart';
@@ -21,6 +19,8 @@ import 'constant.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
+import 'page/onboarding.dart';
+import 'page/settings.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
 
@@ -109,7 +109,6 @@ class _MyAppState extends State<MyApp> {
       title: "Sudoku",
     );
 
-    final enter = EnterName();
     return ScopedModel<SudokuState>(
       model: _sudokuState ?? SudokuState.newSudokuState(),
       child: MaterialApp(
@@ -133,7 +132,8 @@ class _MyAppState extends State<MyApp> {
           "/bootstrap": (context) => bootstrapPage,
           "/newGame": (context) => sudokuGamePage,
           "/gaming": (context) => sudokuGamePage,
-          "/enterName": (context) => enter,
+          "/enterName": (context) => EnterName(),
+          "/settings": (context) => Settings(),
         },
       ),
     );
