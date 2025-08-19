@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
@@ -21,6 +22,10 @@ import 'constant.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
+import 'services/admob/appopen_admanager.dart';
+import 'services/admob/interstitial_admanager.dart';
+import 'services/firebase/firebase_services.dart';
+import 'services/inapp/inapp_service.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
 
@@ -31,9 +36,26 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await Hive.initFlutter();
+  await FirebaseServices.init();
   Hive.registerAdapter(UserProfileAdapter());
   Hive.registerAdapter(GameHistoryAdapter());
+  MobileAds.instance.initialize();
+  AppOpenAdManager.inst.loadAd();
+  InterstitialAdManager.inst.loadAd();
   runApp(MyApp());
+  WidgetsBinding.instance.addObserver(_Handler());
+}
+
+//
+class _Handler extends WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      AppOpenAdManager.inst.onAppPaused();
+    } else if (state == AppLifecycleState.resumed) {
+      AppOpenAdManager.inst.onAppResumed();
+    }
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -54,10 +76,6 @@ class _MyAppState extends State<MyApp> {
 
   // firebase init
   _firebaseInit() async {
-    if (!Constant.enableGoogleFirebase) {
-      log.i("Google Firebase is disable.");
-      return;
-    }
     // await Firebase.initializeApp(
     //   options: DefaultFirebaseOptions.currentPlatform,
     // );
@@ -96,6 +114,7 @@ class _MyAppState extends State<MyApp> {
     await _firebaseInit();
     await _soundEffectWarmedUp();
     await _modelWarmedUp();
+    // await InAppService.inst.init();
     await UserService.inst.init();
     return await SudokuState.resumeFromDB();
   }

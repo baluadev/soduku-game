@@ -36,6 +36,12 @@ dependencies:
   tflite_flutter: ^0.11.0
   opencv_dart: 1.2.3
 
+  firebase_core: ^3.4.0
+  firebase_remote_config: ^5.1.0
+  firebase_messaging: ^15.1.0
+  firebase_analytics: ^11.3.0
+  cloud_firestore: ^5.4.0
+
   # firebase_core: ^3.3.0
   # firebase_crashlytics: ^4.0.4
   # firebase_analytics: ^11.2.1
@@ -47,6 +53,10 @@ dependencies:
   simple_shadow: ^0.3.1
 
   flutter_remix: 0.0.3
+
+  google_mobile_ads: ^5.1.0
+  in_app_purchase: ^3.2.0
+  package_info_plus: ^8.0.2
 
 dev_dependencies:
   flutter_test:

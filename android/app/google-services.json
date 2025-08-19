@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984785403612",
+    "project_id": "sudoku-hatchling",
+    "storage_bucket": "sudoku-hatchling.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984785403612:android:80921a3504d03fcfe0fe19",
+        "android_client_info": {
+          "package_name": "up.nexstudio.sudoku.hatchling"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJAuv2os4x2w8P2Mx662x116b5rp3W2Gk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

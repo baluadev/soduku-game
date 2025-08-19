@@ -6,7 +6,7 @@ import 'package:sudoku/size_extension.dart';
 class AppThemes {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: Color(0xFFFFFFFF),
     primaryColor: Color(0xFFFFD72E),
     colorScheme: ColorScheme(
       brightness: Brightness.light,

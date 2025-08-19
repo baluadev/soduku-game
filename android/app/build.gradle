@@ -1,6 +1,7 @@
 plugins {
     id "com.android.application"
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
     id "org.jetbrains.kotlin.android"
 }
 
@@ -36,7 +37,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 35
         multiDexEnabled true
-        versionCode 20250818
+        versionCode 20250819
         versionName "1.0.0"
 
         ndk {
@@ -57,6 +58,12 @@ android {
     kotlinOptions {
 //        jvmTarget = '1.8'
     }
+}
+
+dependencies {
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.billingclient:billing:7.0.0'
+
 }
 
 flutter {
