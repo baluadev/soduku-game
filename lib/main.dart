@@ -7,25 +7,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/bootstrap.dart';
 import 'package:sudoku/page/sudoku_game.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 
 import 'configs/themes.dart';
-import 'constant.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
 import 'services/admob/appopen_admanager.dart';
 import 'services/admob/interstitial_admanager.dart';
 import 'services/firebase/firebase_services.dart';
-import 'services/inapp/inapp_service.dart';
+import 'page/settings.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
 
@@ -42,6 +39,7 @@ void main() async {
   MobileAds.instance.initialize();
   AppOpenAdManager.inst.loadAd();
   InterstitialAdManager.inst.loadAd();
+  await UserService.inst.init();
   runApp(MyApp());
   WidgetsBinding.instance.addObserver(_Handler());
 }
@@ -90,7 +88,7 @@ class _MyAppState extends State<MyApp> {
     // };
     // Flutter Isolate Context Error Handler
     Isolate.current.addErrorListener(RawReceivePort((pair) async {
-      final List<dynamic> errorAndStacktrace = pair;
+      // final List<dynamic> errorAndStacktrace = pair;
       // await FirebaseCrashlytics.instance.recordError(
       //   errorAndStacktrace.first,
       //   errorAndStacktrace.last,
@@ -114,8 +112,6 @@ class _MyAppState extends State<MyApp> {
     await _firebaseInit();
     await _soundEffectWarmedUp();
     await _modelWarmedUp();
-    // await InAppService.inst.init();
-    await UserService.inst.init();
     return await SudokuState.resumeFromDB();
   }
 
@@ -128,31 +124,41 @@ class _MyAppState extends State<MyApp> {
       title: "Sudoku",
     );
 
-    final enter = EnterName();
     return ScopedModel<SudokuState>(
       model: _sudokuState ?? SudokuState.newSudokuState(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Sudoku Hatchling',
-        theme: AppThemes.lightTheme, // Light mode
-        darkTheme: AppThemes.darkTheme, // Dark mode
-        themeMode: ThemeMode.dark, // Tự đổi theo hệ thống
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate
-        ],
-        locale: Locale("en"), // i18n debug
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: _sudokuState != null
-            ? BootstrapPage(title: "Loading")
-            : SplashScreen(),
-        routes: <String, WidgetBuilder>{
-          "/bootstrap": (context) => bootstrapPage,
-          "/newGame": (context) => sudokuGamePage,
-          "/gaming": (context) => sudokuGamePage,
-          "/enterName": (context) => enter,
+      child: ValueListenableBuilder(
+        valueListenable: UserService.inst.profileBox.listenable(),
+        builder: (context, value, child) {
+          final darkMode = UserService.inst.darkMode();
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Sudoku Hatchling',
+            theme: AppThemes.lightTheme, // Light mode
+            darkTheme: AppThemes.darkTheme, // Dark mode
+            themeMode: darkMode == null
+                ? ThemeMode.system
+                : darkMode
+                    ? ThemeMode.dark
+                    : ThemeMode.light, // Tự đổi theo hệ thống
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            locale: Locale("en"), // i18n debug
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: _sudokuState != null
+                ? BootstrapPage(title: "Loading")
+                : SplashScreen(),
+            routes: <String, WidgetBuilder>{
+              "/bootstrap": (context) => bootstrapPage,
+              "/newGame": (context) => sudokuGamePage,
+              "/gaming": (context) => sudokuGamePage,
+              "/enterName": (context) => EnterName(),
+              "/settings": (context) => Settings(),
+            },
+          );
         },
       ),
     );

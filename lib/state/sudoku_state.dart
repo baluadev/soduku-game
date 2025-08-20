@@ -126,6 +126,14 @@ class SudokuState extends Model {
     notifyListeners();
   }
 
+  void lifeAdd() {
+    if (this.life < 3) {
+      this.life++;
+    }
+    this.status = SudokuGameStatus.gaming;
+    notifyListeners();
+  }
+
   void hintLoss() {
     if (this.hint > 0) {
       this.hint--;

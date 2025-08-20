@@ -15,6 +15,7 @@ import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
+import 'package:sudoku/page/onboarding.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
@@ -411,10 +412,23 @@ class _BootstrapPageState extends State<BootstrapPage> {
 
   @override
   Widget build(BuildContext context) {
+    final profile = UserService.inst.getProfile();
+    if (profile == null) {
+      return Onboarding();
+    }
+
     return ScopedModelDescendant<SudokuState>(
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
+          actions: [
+            BtnSettings(
+              onTap: () {
+                Navigator.popAndPushNamed(context, '/settings');
+              },
+            ),
+            SizedBox(width: 24),
+          ],
         ),
         backgroundColor: Theme.of(context).primaryColor,
         body: Padding(

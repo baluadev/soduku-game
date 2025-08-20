@@ -107,6 +107,36 @@ class BtnWhite extends StatelessWidget {
   }
 }
 
+class BtnYellow extends StatelessWidget {
+  final String title;
+  final double? scale;
+  final VoidCallback? onTap;
+  const BtnYellow({super.key, required this.title, this.onTap, this.scale = 2});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            'assets/image/btn_yellow.png',
+            scale: scale,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontSize: 16.r, color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class BtnClose extends StatelessWidget {
   final VoidCallback? onTap;
   const BtnClose({super.key, this.onTap});
@@ -204,6 +234,32 @@ class BtnSettings extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class BtnToggle extends StatelessWidget {
+  final bool enable;
+  final VoidCallback? onTap;
+  const BtnToggle({
+    super.key,
+    required this.enable,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final on = Image.asset(
+      'assets/image/on_toogle.png',
+      scale: 2,
+    );
+    final off = Image.asset(
+      'assets/image/off_toogle.png',
+      scale: 2,
+    );
+    return BtnEffect(
+      onTap: onTap,
+      child: enable ? on : off,
     );
   }
 }
