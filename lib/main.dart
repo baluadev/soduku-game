@@ -19,7 +19,6 @@ import 'constant.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
-import 'page/onboarding.dart';
 import 'page/settings.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
@@ -33,6 +32,7 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserProfileAdapter());
   Hive.registerAdapter(GameHistoryAdapter());
+  await UserService.inst.init();
   runApp(MyApp());
 }
 
@@ -96,7 +96,6 @@ class _MyAppState extends State<MyApp> {
     await _firebaseInit();
     await _soundEffectWarmedUp();
     await _modelWarmedUp();
-    await UserService.inst.init();
     return await SudokuState.resumeFromDB();
   }
 
@@ -111,29 +110,39 @@ class _MyAppState extends State<MyApp> {
 
     return ScopedModel<SudokuState>(
       model: _sudokuState ?? SudokuState.newSudokuState(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Sudoku Hatchling',
-        theme: AppThemes.lightTheme, // Light mode
-        darkTheme: AppThemes.darkTheme, // Dark mode
-        themeMode: ThemeMode.dark, // Tự đổi theo hệ thống
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate
-        ],
-        locale: Locale("en"), // i18n debug
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: _sudokuState != null
-            ? BootstrapPage(title: "Loading")
-            : SplashScreen(),
-        routes: <String, WidgetBuilder>{
-          "/bootstrap": (context) => bootstrapPage,
-          "/newGame": (context) => sudokuGamePage,
-          "/gaming": (context) => sudokuGamePage,
-          "/enterName": (context) => EnterName(),
-          "/settings": (context) => Settings(),
+      child: ValueListenableBuilder(
+        valueListenable: UserService.inst.profileBox.listenable(),
+        builder: (context, value, child) {
+          final darkMode = UserService.inst.darkMode();
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Sudoku Hatchling',
+            theme: AppThemes.lightTheme, // Light mode
+            darkTheme: AppThemes.darkTheme, // Dark mode
+            themeMode: darkMode == null
+                ? ThemeMode.system
+                : darkMode
+                    ? ThemeMode.dark
+                    : ThemeMode.light, // Tự đổi theo hệ thống
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            locale: Locale("en"), // i18n debug
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: _sudokuState != null
+                ? BootstrapPage(title: "Loading")
+                : SplashScreen(),
+            routes: <String, WidgetBuilder>{
+              "/bootstrap": (context) => bootstrapPage,
+              "/newGame": (context) => sudokuGamePage,
+              "/gaming": (context) => sudokuGamePage,
+              "/enterName": (context) => EnterName(),
+              "/settings": (context) => Settings(),
+            },
+          );
         },
       ),
     );

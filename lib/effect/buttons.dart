@@ -237,3 +237,29 @@ class BtnSettings extends StatelessWidget {
     );
   }
 }
+
+class BtnToggle extends StatelessWidget {
+  final bool enable;
+  final VoidCallback? onTap;
+  const BtnToggle({
+    super.key,
+    required this.enable,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final on = Image.asset(
+      'assets/image/on_toogle.png',
+      scale: 2,
+    );
+    final off = Image.asset(
+      'assets/image/off_toogle.png',
+      scale: 2,
+    );
+    return BtnEffect(
+      onTap: onTap,
+      child: enable ? on : off,
+    );
+  }
+}

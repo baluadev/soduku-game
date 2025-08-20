@@ -421,14 +421,14 @@ class _BootstrapPageState extends State<BootstrapPage> {
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          // actions: [
-          //   BtnSettings(
-          //     onTap: () {
-          //       Navigator.popAndPushNamed(context, '/settings');
-          //     },
-          //   ),
-          //   SizedBox(width: 24),
-          // ],
+          actions: [
+            BtnSettings(
+              onTap: () {
+                Navigator.popAndPushNamed(context, '/settings');
+              },
+            ),
+            SizedBox(width: 24),
+          ],
         ),
         backgroundColor: Theme.of(context).primaryColor,
         body: Padding(

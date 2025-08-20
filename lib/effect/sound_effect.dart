@@ -1,13 +1,16 @@
 import 'dart:collection';
 
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
+import 'package:sudoku/models/user_profile.dart';
 
 final Logger log = Logger();
 
 /// this class define sound effect
 class SoundEffect {
   static bool _init = false;
+  static bool _enableSound = false;
 
   static final AudioPlayer _wrongAudio = AudioPlayer();
   static final AudioPlayer _victoryAudio = AudioPlayer();
@@ -24,12 +27,17 @@ class SoundEffect {
       await _answerTipAudio.setAsset("assets/audio/answer_tip.mp3");
     }
     _init = true;
+
+    UserService.inst.profileBox.listenable().addListener(() {
+      _enableSound = UserService.inst.enableSound();
+    });
   }
 
   static stuffError() async {
     if (!_init) {
       await init();
     }
+    if (!_enableSound) return;
     await _wrongAudio.seek(Duration.zero);
     await _wrongAudio.play();
   }
@@ -38,6 +46,7 @@ class SoundEffect {
     if (!_init) {
       await init();
     }
+    if (!_enableSound) return;
     await _victoryAudio.seek(Duration.zero);
     await _victoryAudio.play();
   }
@@ -46,6 +55,7 @@ class SoundEffect {
     if (!_init) {
       await init();
     }
+    if (!_enableSound) return;
     await _gameOverAudio.seek(Duration.zero);
     await _gameOverAudio.play();
   }
@@ -54,6 +64,7 @@ class SoundEffect {
     if (!_init) {
       await init();
     }
+    if (!_enableSound) return;
     await _answerTipAudio.seek(Duration.zero);
     await _answerTipAudio.play();
   }
@@ -63,6 +74,7 @@ class SoundEffect {
 
   static sudokuSpeak(String languageCode) async {
     print("play voice use language : $languageCode");
+    if (!_enableSound) return;
 
     bool isEmpty = _sudokuLanguageVoiceEmptySet.contains(languageCode);
     if (isEmpty) {

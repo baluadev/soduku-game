@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sudoku/effect/buttons.dart';
+import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/splash_screen.dart';
 
 class Settings extends StatefulWidget {
@@ -10,15 +12,20 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
-  
-
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        title: Text(
+          'Hey, ${UserService.inst.getProfile()?.name ?? ''}',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         actions: [
           BtnClose(
             onTap: () => Navigator.of(context).popAndPushNamed('/bootstrap'),
@@ -51,14 +58,42 @@ class _SettingsState extends State<Settings> {
                       'Sound',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    trailing: Switch(value: false, onChanged: (value) {}),
+                    trailing: ValueListenableBuilder(
+                      valueListenable: UserService.inst.profileBox.listenable(),
+                      builder: (context, value, child) {
+                        final enable = UserService.inst.enableSound();
+                        return BtnToggle(
+                          enable: enable,
+                          onTap: () {
+                            UserService.inst.toogleEnableSound(!enable);
+                          },
+                        );
+                      },
+                    ),
                   ),
                   ListTile(
                     title: Text(
                       'Dark Mode',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    trailing: Switch(value: false, onChanged: (value) {}),
+                    trailing: ValueListenableBuilder(
+                      valueListenable: UserService.inst.profileBox.listenable(),
+                      builder: (context, value, child) {
+                        final enable = UserService.inst.darkMode() ?? false;
+                        return BtnToggle(
+                          enable: enable,
+                          onTap: () {
+                            UserService.inst.toogleDarkMode(!enable);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: Text(
+                      'Policies & Terms',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
                 ],
               ),

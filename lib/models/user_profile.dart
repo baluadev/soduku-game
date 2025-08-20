@@ -75,31 +75,31 @@ class UserService {
   static const userProfileBox = 'user_profile_box';
   static const gameHistoryBox = 'game_history_box';
 
-  late Box<UserProfile> _profileBox;
+  late Box<UserProfile> profileBox;
   late Box<GameHistory> _historyBox;
 
   Future<void> init() async {
-    _profileBox = await Hive.openBox<UserProfile>(userProfileBox);
+    profileBox = await Hive.openBox<UserProfile>(userProfileBox);
     _historyBox = await Hive.openBox<GameHistory>(gameHistoryBox);
   }
 
   // Lấy user profile
   UserProfile? getProfile() {
-    if (_profileBox.isEmpty) return null;
-    return _profileBox.getAt(0);
+    if (profileBox.isEmpty) return null;
+    return profileBox.getAt(0);
   }
 
   // Tạo mới user profile
   Future<void> createProfile(String name) async {
     final profile = UserProfile(name: name);
-    await _profileBox.clear();
-    await _profileBox.add(profile);
+    await profileBox.clear();
+    await profileBox.add(profile);
   }
 
   //darkMode
-  bool darkMode() {
+  bool? darkMode() {
     final profile = getProfile();
-    return profile?.darkMode ?? false;
+    return profile?.darkMode;
   }
 
   void toogleDarkMode(bool value) {
