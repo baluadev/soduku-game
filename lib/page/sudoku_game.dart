@@ -9,6 +9,8 @@ import 'package:flutter_remix/flutter_remix.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/constant.dart';
@@ -287,9 +289,10 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           top: 120,
           child: Text(
             levelLabel,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                fontSize: 20.r),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(color: Colors.white, fontSize: 20.r),
           ),
         ),
         Positioned(
@@ -316,12 +319,24 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         ),
         Positioned(
           bottom: 20,
-          child: BtnRed(
-            title: 'Continue',
-            scale: 3,
-            onTap: () {
-              Navigator.pop(context, "exit");
-            },
+          child: Row(
+            children: [
+              BtnYellow(
+                title: 'Share',
+                scale: 4.2,
+                onTap: () {
+                  Navigator.pop(context, "share");
+                },
+              ),
+              SizedBox(width: 16),
+              BtnYellow(
+                title: 'Continue',
+                scale: 4.2,
+                onTap: () {
+                  Navigator.pop(context, "exit");
+                },
+              )
+            ],
           ),
         ),
       ],
@@ -368,11 +383,19 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
 
     String signal = await Navigator.of(context).push(gameOverPageRouteBuilder);
+    log.i(signal);
     switch (signal) {
       case "ad":
         // TODO: logic xem quảng cáo để hồi sinh
         break;
       case "exit":
+        Navigator.pop(context);
+        break;
+      case "share":
+        {
+          _shareResult();
+        }
+        break;
       default:
         Navigator.pop(context);
         break;
@@ -1202,53 +1225,84 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     _timer = null;
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+
+  Future<void> _shareResult() async {
+    final image = await screenshotController.capture();
+    if (image == null) return;
+
+    final directory = await Directory.systemTemp.createTemp();
+    final file = File('${directory.path}/result.png');
+    await file.writeAsBytes(image);
+    final String levelLabel =
+        LocalizationUtils.localizationLevelName(context, _state.level!);
+    Share.shareXFiles([XFile(file.path)],
+        text: getRandomShareMessage(levelLabel, _state.timer));
+  }
+
+  List<String> shareMessages = [
+    "🎉 I just conquered Sudoku Level {level} in {time} ⏱️\nWho’s confident enough to beat me? 😎\n#SudokuChallenge #NexStudio",
+    "🚀 Completed Sudoku {level} in just {time}!\nWhich friend dares to break my record? 🧩\nDownload now and prove your skills 💪\n#SudokuHatchling",
+    "🧠 After {time}, I finally solved Sudoku Level {level}.\nMy brain is now at \"Super Saiyan\" level 🤯⚡️\nWho wants to test their IQ? 😂",
+    "✅ Sudoku Completed: {level}\n⏱️ Time: {time}\nOne step closer to becoming a Sudoku Master 🏆",
+  ];
+
+  String getRandomShareMessage(String level, String time) {
+    final random = Random();
+    String template = shareMessages[random.nextInt(shareMessages.length)];
+    return template.replaceAll("{level}", level).replaceAll("{time}", time);
+  }
+
   @override
   Widget build(BuildContext context) {
     return _willPopWidget(
       context,
       ScopedModelDescendant<SudokuState>(
-        builder: (context, child, model) => Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            leading: BtnClose(
-              onTap: () => Navigator.of(context).pop(),
-            ),
-            centerTitle: true,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  FlutterRemix.time_line,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                const SizedBox(width: 5),
-                Container(
-                  alignment: AlignmentDirectional.center,
-                  child: Text(
-                    "${_state.timer} - ${LocalizationUtils.localizationLevelName(context, _state.level!)}",
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontFamily: fontLato,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.r,
-                        ),
+        builder: (context, child, model) => Screenshot(
+          controller: screenshotController,
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              leading: BtnClose(
+                onTap: () => Navigator.of(context).pop(),
+              ),
+              centerTitle: true,
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    FlutterRemix.time_line,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
+                  const SizedBox(width: 5),
+                  Container(
+                    alignment: AlignmentDirectional.center,
+                    child: Text(
+                      "${_state.timer} - ${LocalizationUtils.localizationLevelName(context, _state.level!)}",
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontFamily: fontLato,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.r,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                BtnHint(
+                  hint: _state.hint,
+                  onTap: tip,
                 ),
+                SizedBox(width: 8),
+                BtnPause(
+                  onTap: pauseGame,
+                ),
+                SizedBox(width: 16),
               ],
             ),
-            actions: [
-              BtnHint(
-                hint: _state.hint,
-                onTap: tip,
-              ),
-              SizedBox(width: 8),
-              BtnPause(
-                onTap: pauseGame,
-              ),
-              SizedBox(width: 16),
-            ],
+            body: _bodyWidget(context),
           ),
-          body: _bodyWidget(context),
         ),
       ),
       (bool didPop) {
