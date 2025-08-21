@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+// import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_gen/gen_l10n/sudoku_localizations.dart';
 import 'package:logger/logger.dart' hide Level;
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/egg_loading.dart';
-import 'package:sudoku/effect/sound_effect.dart';
+// import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/page/onboarding.dart';
@@ -20,9 +19,9 @@ import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
-import 'package:sudoku/util/localization_util.dart';
+// import 'package:sudoku/util/localization_util.dart';
 
-import 'ai_scan.dart';
+// import 'ai_scan.dart';
 
 final Logger log = Logger();
 
@@ -68,167 +67,167 @@ class BootstrapPage extends StatefulWidget {
   _BootstrapPageState createState() => _BootstrapPageState();
 }
 
-Widget _buttonWrapper(
-    BuildContext context, Widget childBuilder(BuildContext content)) {
-  return Container(
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-      width: 300,
-      height: 60,
-      child: childBuilder(context));
-}
+// Widget _buttonWrapper(
+//     BuildContext context, Widget childBuilder(BuildContext content)) {
+//   return Container(
+//       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+//       width: 300,
+//       height: 60,
+//       child: childBuilder(context));
+// }
 
-Widget _aiSolverButton(BuildContext context) {
-  String buttonLabel = AppLocalizations.of(context)!.menuAISolver;
-  return Offstage(
-      offstage: false,
-      child: _buttonWrapper(
-          context,
-          (content) => CupertinoButton(
-                color: Colors.blue,
-                child: Text(
-                  buttonLabel,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onPressed: () async {
-                  log.d("AI Solver Scanner");
-                  WidgetsFlutterBinding.ensureInitialized();
+// Widget _aiSolverButton(BuildContext context) {
+//   String buttonLabel = AppLocalizations.of(context)!.menuAISolver;
+//   return Offstage(
+//       offstage: false,
+//       child: _buttonWrapper(
+//           context,
+//           (content) => CupertinoButton(
+//                 color: Colors.blue,
+//                 child: Text(
+//                   buttonLabel,
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 onPressed: () async {
+//                   log.d("AI Solver Scanner");
+//                   WidgetsFlutterBinding.ensureInitialized();
 
-                  final cameras = await availableCameras();
-                  final firstCamera = cameras.first;
-                  final aiScanPage = AIScanPage(camera: firstCamera);
+//                   final cameras = await availableCameras();
+//                   final firstCamera = cameras.first;
+//                   final aiScanPage = AIScanPage(camera: firstCamera);
 
-                  Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                          opaque: false,
-                          pageBuilder: (BuildContext context, _, __) {
-                            return aiScanPage;
-                          }));
-                },
-              )));
-}
+//                   Navigator.push(
+//                       context,
+//                       PageRouteBuilder(
+//                           opaque: false,
+//                           pageBuilder: (BuildContext context, _, __) {
+//                             return aiScanPage;
+//                           }));
+//                 },
+//               )));
+// }
 
-Widget _continueGameButton(BuildContext context) {
-  return ScopedModelDescendant<SudokuState>(builder: (context, child, state) {
-    String buttonLabel = AppLocalizations.of(context)!.menuContinueGame;
-    String continueMessage =
-        "${LocalizationUtils.localizationLevelName(context, state.level ?? Level.eggshell)} - ${state.timer}";
-    return Offstage(
-      offstage: state.status != SudokuGameStatus.pause,
-      child: Container(
-        width: 300,
-        height: 80,
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.secondary),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: GestureDetector(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Text(
-                  buttonLabel,
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Container(
-                child: Text(
-                  continueMessage,
-                  style: TextStyle(fontSize: 13),
-                ),
-              )
-            ],
-          ),
-          onTap: () {
-            Navigator.pushNamed(context, "/gaming");
-          },
-        ),
-      ),
-    );
-  });
-}
+// Widget _continueGameButton(BuildContext context) {
+//   return ScopedModelDescendant<SudokuState>(builder: (context, child, state) {
+//     String buttonLabel = AppLocalizations.of(context)!.menuContinueGame;
+//     String continueMessage =
+//         "${LocalizationUtils.localizationLevelName(context, state.level ?? Level.eggshell)} - ${state.timer}";
+//     return Offstage(
+//       offstage: state.status != SudokuGameStatus.pause,
+//       child: Container(
+//         width: 300,
+//         height: 80,
+//         decoration: BoxDecoration(
+//           border: Border.all(color: Theme.of(context).colorScheme.secondary),
+//           borderRadius: BorderRadius.circular(8),
+//         ),
+//         child: GestureDetector(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: <Widget>[
+//               Container(
+//                 child: Text(
+//                   buttonLabel,
+//                   style: TextStyle(
+//                     color: Colors.blue,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ),
+//               Container(
+//                 child: Text(
+//                   continueMessage,
+//                   style: TextStyle(fontSize: 13),
+//                 ),
+//               )
+//             ],
+//           ),
+//           onTap: () {
+//             Navigator.pushNamed(context, "/gaming");
+//           },
+//         ),
+//       ),
+//     );
+//   });
+// }
 
-Widget _newGameButton(BuildContext context) {
-  return _buttonWrapper(
-      context,
-      (_) => CupertinoButton(
-          color: Colors.blue,
-          child: Text(
-            AppLocalizations.of(context)!.menuNewGame,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          onPressed: () {
-            // cancel  button
-            Widget cancelButton = SizedBox(
-                height: 60,
-                width: MediaQuery.of(context).size.width,
-                child: Container(
-                    child: CupertinoButton(
-                  child: Text(
-                    AppLocalizations.of(context)!.levelCancel,
-                    style: TextStyle(color: Colors.black45),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                )));
+// Widget _newGameButton(BuildContext context) {
+//   return _buttonWrapper(
+//       context,
+//       (_) => CupertinoButton(
+//           color: Colors.blue,
+//           child: Text(
+//             AppLocalizations.of(context)!.menuNewGame,
+//             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+//           ),
+//           onPressed: () {
+//             // cancel  button
+//             Widget cancelButton = SizedBox(
+//                 height: 60,
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Container(
+//                     child: CupertinoButton(
+//                   child: Text(
+//                     AppLocalizations.of(context)!.levelCancel,
+//                     style: TextStyle(color: Colors.black45),
+//                   ),
+//                   onPressed: () {
+//                     Navigator.of(context).pop(false);
+//                   },
+//                 )));
 
-            // iterative difficulty build buttons
-            List<Widget> buttons = [];
-            Level.values.forEach((Level level) {
-              String levelName =
-                  LocalizationUtils.localizationLevelName(context, level);
-              buttons.add(SizedBox(
-                  height: 60,
-                  width: MediaQuery.of(context).size.width,
-                  child: Container(
-                      margin: EdgeInsets.all(1.0),
-                      child: CupertinoButton(
-                        child: Text(
-                          levelName,
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () async {
-                          log.d(
-                              "begin generator Sudoku with level : $levelName");
-                          await _sudokuGenerate(context, level);
-                          Navigator.popAndPushNamed(context, "/gaming");
-                        },
-                      ))));
-            });
-            buttons.add(cancelButton);
+//             // iterative difficulty build buttons
+//             List<Widget> buttons = [];
+//             Level.values.forEach((Level level) {
+//               String levelName =
+//                   LocalizationUtils.localizationLevelName(context, level);
+//               buttons.add(SizedBox(
+//                   height: 60,
+//                   width: MediaQuery.of(context).size.width,
+//                   child: Container(
+//                       margin: EdgeInsets.all(1.0),
+//                       child: CupertinoButton(
+//                         child: Text(
+//                           levelName,
+//                           style: TextStyle(
+//                             color: Colors.blue,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         onPressed: () async {
+//                           log.d(
+//                               "begin generator Sudoku with level : $levelName");
+//                           await _sudokuGenerate(context, level);
+//                           Navigator.popAndPushNamed(context, "/gaming");
+//                         },
+//                       ))));
+//             });
+//             buttons.add(cancelButton);
 
-            showCupertinoModalBottomSheet(
-              context: context,
-              barrierColor: Colors.black38,
-              topRadius: Radius.circular(20),
-              builder: (context) {
-                return SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Material(
-                        child: Container(
-                            height: 320,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: buttons))),
-                  ),
-                );
-              },
-            );
-          }));
-}
+//             showCupertinoModalBottomSheet(
+//               context: context,
+//               barrierColor: Colors.black38,
+//               topRadius: Radius.circular(20),
+//               builder: (context) {
+//                 return SafeArea(
+//                   child: Padding(
+//                     padding: EdgeInsets.symmetric(horizontal: 10),
+//                     child: Material(
+//                         child: Container(
+//                             height: 320,
+//                             child: Column(
+//                                 mainAxisAlignment: MainAxisAlignment.end,
+//                                 children: buttons))),
+//                   ),
+//                 );
+//               },
+//             );
+//           }));
+// }
 
 void _internalSudokuGenerate(List<dynamic> args) {
   Level level = args[0];
@@ -289,6 +288,11 @@ Future _sudokuGenerate(BuildContext context, Level level) async {
 }
 
 class _BootstrapPageState extends State<BootstrapPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   int selectLv = 0;
 
   void selectLevel(int lv) {
@@ -308,20 +312,26 @@ class _BootstrapPageState extends State<BootstrapPage> {
         Align(
           alignment: Alignment.bottomCenter,
           child: Stack(
-            alignment: Alignment.center,
             children: [
               CustomPaint(
                   size: Size(MediaQuery.of(context).size.width, 200),
                   painter:
                       WavePainter(Theme.of(context).scaffoldBackgroundColor)),
-              BtnRed(
-                title: 'Let’s Play!',
-                onTap: () async {
-                  final level =
-                      Level.values.where((e) => e.index == selectLv).first;
-                  await _sudokuGenerate(context, level);
-                  Navigator.pushNamed(context, "/gaming");
-                },
+              Positioned(
+                bottom: 10,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: BtnRed(
+                    title: 'Let’s Play!',
+                    onTap: () async {
+                      final level =
+                          Level.values.where((e) => e.index == selectLv).first;
+                      await _sudokuGenerate(context, level);
+                      Navigator.pushNamed(context, "/gaming");
+                    },
+                  ),
+                ),
               ),
             ],
           ),
