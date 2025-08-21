@@ -309,7 +309,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           top: 300,
           left: 180,
           child: Text(
-            'x10',
+            '+${Default.starsEarned(_state.level!)}',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize: 32.r,
                   fontFamily: fontLato,

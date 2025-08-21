@@ -73,7 +73,7 @@ class GameHistoryAdapter extends TypeAdapter<GameHistory> {
     };
     return GameHistory(
       id: fields[0] as String,
-      level: fields[1] as Level,
+      level: fields[1] as int,
       isWin: fields[2] as bool,
       timeTaken: fields[3] as String,
       startTime: fields[4] as DateTime,

@@ -26,6 +26,7 @@ class _OnboardingState extends State<Onboarding> {
           Page1(onNext: onNext),
           Page2(onNext: onNext),
           Page3(onNext: onNext),
+          Page4(onNext: onNext),
         ],
       ),
     );
@@ -50,6 +51,13 @@ class _OnboardingState extends State<Onboarding> {
         );
         break;
       case 2:
+        _pageController.animateToPage(
+          3,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.linear,
+        );
+        break;
+      case 3:
         Navigator.of(context).popAndPushNamed('/enterName');
         break;
       default:
@@ -119,6 +127,56 @@ class Page2 extends StatelessWidget {
           children: [
             SizedBox(height: 120),
             Text(
+              'Daily Egg Hunt',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Image.asset(
+                'assets/image/feature2.png',
+                scale: 2,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                'Crack hidden rewards every day \nwith our Daily Egg Hunt!',
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 0,
+          child: Image.asset(
+            'assets/image/onboarding1.png',
+            scale: 2,
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(child: BtnRed(title: 'Next', onTap: onNext)),
+        ),
+      ],
+    );
+  }
+}
+
+class Page3 extends StatelessWidget {
+  final VoidCallback onNext;
+  const Page3({super.key, required this.onNext});
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 120),
+            Text(
               'Night Owl Mode',
               style: Theme.of(context).textTheme.titleLarge,
             ),
@@ -157,9 +215,9 @@ class Page2 extends StatelessWidget {
   }
 }
 
-class Page3 extends StatelessWidget {
+class Page4 extends StatelessWidget {
   final VoidCallback onNext;
-  const Page3({super.key, required this.onNext});
+  const Page4({super.key, required this.onNext});
   @override
   Widget build(BuildContext context) {
     return Stack(

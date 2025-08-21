@@ -48,7 +48,7 @@ class GameHistory extends HiveObject {
   final String id;
 
   @HiveField(1)
-  Level level;
+  int level;
 
   @HiveField(2)
   bool isWin;
@@ -212,7 +212,7 @@ class UserService {
     var uuid = Uuid().v1();
     final history = GameHistory(
       id: uuid,
-      level: level,
+      level: level.index,
       isWin: false,
       timeTaken: '00:00',
       startTime: DateTime.now(),
