@@ -17,6 +17,7 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserProfile(
+      id: fields[8] as String,
       name: fields[0] as String,
       totalPoints: fields[1] as int,
       gamesPlayed: fields[2] as int,
@@ -31,7 +32,7 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(6)
       ..write(obj.darkMode)
       ..writeByte(7)
-      ..write(obj.enableSound);
+      ..write(obj.enableSound)
+      ..writeByte(8)
+      ..write(obj.id);
   }
 
   @override

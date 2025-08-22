@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:sudoku/services/firebase/firestore_service.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,7 +31,11 @@ class UserProfile extends HiveObject {
   @HiveField(7)
   bool? enableSound;
 
+  @HiveField(8)
+  String id;
+
   UserProfile({
+    required this.id,
     required this.name,
     this.totalPoints = 0,
     this.gamesPlayed = 0,
@@ -129,7 +134,7 @@ class UserService {
 
   // Tạo mới user profile
   Future<void> createProfile(String name) async {
-    final profile = UserProfile(name: name);
+    final profile = UserProfile(id: Uuid().v4(), name: name);
     await profileBox.clear();
     await profileBox.add(profile);
   }
@@ -194,7 +199,6 @@ class UserService {
     }
 
     final history = _historyBox.getAt(index);
-
     if (history != null) {
       final updated = history.copyWith(
         isWin: isWin,
@@ -205,6 +209,7 @@ class UserService {
         starsEarned: starsEarned,
       );
       await _historyBox.putAt(index, updated);
+      await FirestoreService.inst.updateLeaderboard();
     }
   }
 
@@ -241,5 +246,29 @@ class UserService {
     } catch (e) {
       return [];
     }
+  }
+
+  int winGames() {
+    final list = getAllHistories();
+    return list.map((e) => e.isWin).toList().length;
+  }
+
+  int totalGames() {
+    return getAllHistories().length;
+  }
+
+  int totalStars() {
+    int stars = 0;
+    final winGames = getAllHistories().where((e) => e.isWin).toList();
+    winGames.forEach((e) {
+      stars += e.starsEarned;
+    });
+    return stars;
+  }
+
+  double winRate() {
+    final list = getAllHistories();
+    if (list.isEmpty) return 0;
+    return (winGames() / totalGames()) * 100;
   }
 }

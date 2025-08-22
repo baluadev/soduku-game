@@ -15,6 +15,7 @@ import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/page/onboarding.dart';
+import 'package:sudoku/services/firebase/firestore_service.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
@@ -432,6 +433,30 @@ class _BootstrapPageState extends State<BootstrapPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: Container(),
+          leadingWidth: 0,
+          centerTitle: false,
+          title: FutureBuilder(
+            future: FirestoreService.inst.getMyRank(),
+            builder: (context, snapshot) {
+              final rank = snapshot.data ?? 0;
+              return RichText(
+                text: TextSpan(
+                  text: 'My Rank: ',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  children: [
+                    TextSpan(
+                      text: '$rank',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontFamily: fontLato,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           actions: [
             BtnSettings(
               onTap: () {

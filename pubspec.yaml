@@ -84,7 +84,6 @@ flutter:
     - assets/image/
     - assets/svg/
     - assets/audio/
-    - assets/audio/speak/
     - assets/tf_model/sudoku/
     - assets/tf_model/digits/
     - assets/fonts/
