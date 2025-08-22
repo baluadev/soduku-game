@@ -40,7 +40,7 @@
   "elapsedTimeText" : "elapsed time",
   "continueGameContentText" : "Double click the screen to continue playing",
   "winnerConclusionText" : "Congratulations on completing the [%level%] Sudoku challenge!",
-  "failureConclusionText": "This round of Sudoku [%level%] had too many errors. Challenge failed!",
+  "failureConclusionText": "This round of Sudoku [%level%] had too many errors. Challenge failed! Watch an ad to gain an extra life and try again.",
 
   "aiSolverLensScanTipsText": "take pictures to solve puzzle"
 }

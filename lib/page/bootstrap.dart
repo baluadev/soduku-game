@@ -431,10 +431,11 @@ class _BootstrapPageState extends State<BootstrapPage> {
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
+          leading: Container(),
           actions: [
             BtnSettings(
               onTap: () {
-                Navigator.popAndPushNamed(context, '/settings');
+                Navigator.pushNamed(context, '/settings');
               },
             ),
             SizedBox(width: 24),

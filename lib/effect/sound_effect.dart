@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
@@ -67,32 +65,5 @@ class SoundEffect {
     if (!_enableSound) return;
     await _answerTipAudio.seek(Duration.zero);
     await _answerTipAudio.play();
-  }
-
-  static final AudioPlayer _sudokuVoice = AudioPlayer();
-  static final HashSet<String> _sudokuLanguageVoiceEmptySet = HashSet();
-
-  static sudokuSpeak(String languageCode) async {
-    print("play voice use language : $languageCode");
-    if (!_enableSound) return;
-
-    bool isEmpty = _sudokuLanguageVoiceEmptySet.contains(languageCode);
-    if (isEmpty) {
-      languageCode = "en";
-    }
-
-    String sudokuSpeakAssetFile =
-        "assets/audio/speak/sudoku_${languageCode}.mp3";
-    try {
-      AudioSource as = AudioSource.asset(sudokuSpeakAssetFile);
-      await _sudokuVoice.setAudioSource(as);
-      await _sudokuVoice.play();
-    } catch (e, stacktrace) {
-      log.e(e, stackTrace: stacktrace);
-      _sudokuLanguageVoiceEmptySet.add(languageCode);
-      AudioSource as = AudioSource.asset("assets/audio/speak/sudoku_en.mp3");
-      await _sudokuVoice.setAudioSource(as);
-      await _sudokuVoice.play();
-    }
   }
 }

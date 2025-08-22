@@ -1269,7 +1269,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   }
 
   List<String> shareMessages = [
-    "🎉 I just conquered Sudoku Level {level} in {time} ⏱️\nWho’s confident enough to beat me? 😎\n#SudokuChallenge #NexStudio",
+    "🎉 I just conquered Sudoku Level {level} in {time} ⏱️\nWho’s confident enough to beat me? 😎\n#SudokuHatchling #NexStudio",
     "🚀 Completed Sudoku {level} in just {time}!\nWhich friend dares to break my record? 🧩\nDownload now and prove your skills 💪\n#SudokuHatchling",
     "🧠 After {time}, I finally solved Sudoku Level {level}.\nMy brain is now at \"Super Saiyan\" level 🤯⚡️\nWho wants to test their IQ? 😂",
     "✅ Sudoku Completed: {level}\n⏱️ Time: {time}\nOne step closer to becoming a Sudoku Master 🏆",

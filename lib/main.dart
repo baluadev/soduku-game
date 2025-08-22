@@ -19,6 +19,7 @@ import 'constant.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
+import 'page/history.dart';
 import 'page/settings.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
@@ -141,6 +142,7 @@ class _MyAppState extends State<MyApp> {
               "/gaming": (context) => sudokuGamePage,
               "/enterName": (context) => EnterName(),
               "/settings": (context) => Settings(),
+              "/history": (context) => HistoryPage(),
             },
           );
         },

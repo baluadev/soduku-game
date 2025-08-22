@@ -24,16 +24,13 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        leading: BtnClose(
+          onTap: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Hey, ${UserService.inst.getProfile()?.name ?? ''}',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        actions: [
-          BtnClose(
-            onTap: () => Navigator.of(context).popAndPushNamed('/bootstrap'),
-          ),
-          SizedBox(width: 24),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 50.0),
@@ -92,6 +89,9 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/history');
+                    },
                     title: Text(
                       'Histories',
                       style: Theme.of(context).textTheme.titleLarge,
