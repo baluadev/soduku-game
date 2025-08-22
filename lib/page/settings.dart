@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sudoku/effect/buttons.dart';
+import 'package:sudoku/main.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/splash_screen.dart';
 
@@ -15,6 +16,7 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
+    log.e(UserService.inst.getAllHistories());
   }
 
   @override
@@ -22,16 +24,13 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        leading: BtnClose(
+          onTap: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Hey, ${UserService.inst.getProfile()?.name ?? ''}',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        actions: [
-          BtnClose(
-            onTap: () => Navigator.of(context).popAndPushNamed('/bootstrap'),
-          ),
-          SizedBox(width: 24),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 50.0),
@@ -87,6 +86,15 @@ class _SettingsState extends State<Settings> {
                           },
                         );
                       },
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/history');
+                    },
+                    title: Text(
+                      'Histories',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                   ListTile(

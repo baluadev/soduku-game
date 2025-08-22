@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
+import 'package:uuid/uuid.dart';
 
 part 'user_profile.g.dart';
 
@@ -44,27 +45,64 @@ class UserProfile extends HiveObject {
 @HiveType(typeId: 11)
 class GameHistory extends HiveObject {
   @HiveField(0)
-  Level level;
+  final String id;
 
   @HiveField(1)
-  bool isWin;
+  int level;
 
   @HiveField(2)
-  Duration timeTaken;
+  bool isWin;
 
   @HiveField(3)
-  DateTime playedAt;
+  String timeTaken;
 
   @HiveField(4)
-  int rewardPoints;
+  final DateTime startTime;
+
+  @HiveField(5)
+  final DateTime endTime;
+
+  @HiveField(6)
+  final int lifeUsed;
+
+  @HiveField(7)
+  final int hintsUsed;
+
+  @HiveField(8)
+  final int starsEarned; // điểm thưởng
 
   GameHistory({
+    required this.id,
     required this.level,
     required this.isWin,
     required this.timeTaken,
-    required this.playedAt,
-    required this.rewardPoints,
+    required this.startTime,
+    required this.endTime,
+    required this.lifeUsed,
+    required this.hintsUsed,
+    required this.starsEarned,
   });
+
+  GameHistory copyWith({
+    bool? isWin,
+    String? timeTaken,
+    DateTime? endTime,
+    int? lifeUsed,
+    int? hintsUsed,
+    int? starsEarned,
+  }) {
+    return GameHistory(
+      id: this.id,
+      level: this.level,
+      isWin: isWin ?? this.isWin,
+      timeTaken: timeTaken ?? this.timeTaken,
+      startTime: this.startTime,
+      endTime: endTime ?? this.endTime,
+      lifeUsed: lifeUsed ?? this.lifeUsed,
+      hintsUsed: hintsUsed ?? this.hintsUsed,
+      starsEarned: starsEarned ?? this.starsEarned,
+    );
+  }
 }
 
 class UserService {
@@ -139,36 +177,69 @@ class UserService {
   }
 
   // Cập nhật khi hoàn thành ván
-  Future<void> addGameResult({
-    required Level level,
+
+  Future<void> updateGameResult(
+    String id, {
     required bool isWin,
-    required Duration timeTaken,
-    int rewardPoints = 0,
+    required String timeTaken,
+    required DateTime endTime,
+    required int lifeUsed,
+    required int hintsUsed,
+    required int starsEarned,
   }) async {
-    final history = GameHistory(
-      level: level,
-      isWin: isWin,
-      timeTaken: timeTaken,
-      playedAt: DateTime.now(),
-      rewardPoints: rewardPoints,
-    );
+    // tìm index của bản ghi có id tương ứng
+    final index = _historyBox.values.toList().indexWhere((h) => h.id == id);
+    if (index == -1) {
+      throw Exception("GameHistory with id $id not found");
+    }
 
-    await _historyBox.add(history);
+    final history = _historyBox.getAt(index);
 
-    final profile = getProfile();
-    if (profile != null) {
-      profile.gamesPlayed += 1;
-      if (isWin) {
-        profile.gamesWon += 1;
-        profile.totalPoints += rewardPoints;
-      } else {
-        profile.gamesLost += 1;
-      }
-      await profile.save();
+    if (history != null) {
+      final updated = history.copyWith(
+        isWin: isWin,
+        timeTaken: timeTaken,
+        endTime: endTime,
+        lifeUsed: lifeUsed,
+        hintsUsed: hintsUsed,
+        starsEarned: starsEarned,
+      );
+      await _historyBox.putAt(index, updated);
     }
   }
 
-  List<GameHistory> getHistory() {
-    return _historyBox.values.toList();
+  Future<String> addGameResult(Level level) async {
+    var uuid = Uuid().v1();
+    final history = GameHistory(
+      id: uuid,
+      level: level.index,
+      isWin: false,
+      timeTaken: '00:00',
+      startTime: DateTime.now(),
+      endTime: DateTime.now(),
+      lifeUsed: 0,
+      hintsUsed: 0,
+      starsEarned: 0,
+    );
+    await _historyBox.add(history);
+    return uuid;
+  }
+
+  GameHistory? getHistoryById(String id) {
+    try {
+      return _historyBox.values.firstWhere(
+        (history) => history.id == id,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  List<GameHistory> getAllHistories() {
+    try {
+      return _historyBox.values.toList();
+    } catch (e) {
+      return [];
+    }
   }
 }

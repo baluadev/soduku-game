@@ -55,6 +55,7 @@ dependencies:
   flutter_remix: 0.0.3
   screenshot: ^2.5.0
   share_plus: ^10.0.0
+  uuid: ^4.5.1
 
   google_mobile_ads: ^5.1.0
   # in_app_purchase: ^3.2.0

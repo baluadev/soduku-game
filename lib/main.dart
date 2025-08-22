@@ -22,6 +22,7 @@ import 'page/enter_name.dart';
 import 'services/admob/appopen_admanager.dart';
 import 'services/admob/interstitial_admanager.dart';
 import 'services/firebase/firebase_services.dart';
+import 'page/history.dart';
 import 'page/settings.dart';
 import 'size_extension.dart';
 import 'splash_screen.dart';
@@ -157,6 +158,7 @@ class _MyAppState extends State<MyApp> {
               "/gaming": (context) => sudokuGamePage,
               "/enterName": (context) => EnterName(),
               "/settings": (context) => Settings(),
+              "/history": (context) => HistoryPage(),
             },
           );
         },

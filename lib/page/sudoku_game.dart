@@ -14,7 +14,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:sudoku/configs/const.dart';
-import 'package:sudoku/constant.dart';
+// import 'package:sudoku/constant.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/models/user_profile.dart';
@@ -25,7 +25,7 @@ import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:sudoku/util/localization_util.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+// import 'package:url_launcher/url_launcher_string.dart';
 
 final Logger log = Logger();
 final ButtonStyle flatButtonStyle = TextButton.styleFrom(
@@ -124,76 +124,76 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   int _perceptionNum = 0;
   bool _markOpen = false;
   bool _manualPause = false;
-
+  late String _uuidGame;
   SudokuState get _state => ScopedModel.of<SudokuState>(context);
 
-  _aboutDialogAction(BuildContext context) {
-    Widget appIcon = GestureDetector(
-        child: Image(image: logoAssetImage, width: 45, height: 45),
-        onDoubleTap: () {
-          WidgetBuilder columnWidget = (BuildContext context) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image(image: logoAssetImage),
-                  CupertinoButton(
-                    child: Text(
-                      AppLocalizations.of(context)!.appName,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                  )
-                ]);
-          };
-          showDialog(context: context, builder: columnWidget);
-        });
-    return showAboutDialog(
-        applicationIcon: appIcon,
-        applicationName: AppLocalizations.of(context)!.appName,
-        context: context,
-        children: <Widget>[
-          GestureDetector(
-            child: Text(
-              "Github Repository",
-              style: TextStyle(color: Colors.blue),
-            ),
-            onTap: () async {
-              if (await canLaunchUrlString(Constant.githubRepository)) {
-                if (Platform.isAndroid) {
-                  await launchUrlString(
-                    Constant.githubRepository,
-                    mode: LaunchMode.externalApplication,
-                    browserConfiguration: BrowserConfiguration(showTitle: true),
-                    webOnlyWindowName: "Sudoku-Flutter Github Repository",
-                  );
-                } else {
-                  await launchUrlString(Constant.githubRepository,
-                      mode: LaunchMode.externalApplication);
-                }
-              } else {
-                log.e(
-                    "can't open browser to url : ${Constant.githubRepository}");
-              }
-            },
-          ),
-          Container(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
-              padding: EdgeInsets.all(0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Sudoku powered by Flutter",
-                        style: TextStyle(fontSize: 12)),
-                    Text(Constant.githubRepository,
-                        style: TextStyle(fontSize: 12))
-                  ]))
-        ]);
-  }
+  // _aboutDialogAction(BuildContext context) {
+  //   Widget appIcon = GestureDetector(
+  //       child: Image(image: logoAssetImage, width: 45, height: 45),
+  //       onDoubleTap: () {
+  //         WidgetBuilder columnWidget = (BuildContext context) {
+  //           return Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: <Widget>[
+  //                 Image(image: logoAssetImage),
+  //                 CupertinoButton(
+  //                   child: Text(
+  //                     AppLocalizations.of(context)!.appName,
+  //                     style: TextStyle(
+  //                       fontSize: 20,
+  //                       color: Colors.white,
+  //                     ),
+  //                   ),
+  //                   onPressed: () {
+  //                     Navigator.pop(context, false);
+  //                   },
+  //                 )
+  //               ]);
+  //         };
+  //         showDialog(context: context, builder: columnWidget);
+  //       });
+  //   return showAboutDialog(
+  //       applicationIcon: appIcon,
+  //       applicationName: AppLocalizations.of(context)!.appName,
+  //       context: context,
+  //       children: <Widget>[
+  //         GestureDetector(
+  //           child: Text(
+  //             "Github Repository",
+  //             style: TextStyle(color: Colors.blue),
+  //           ),
+  //           onTap: () async {
+  //             if (await canLaunchUrlString(Constant.githubRepository)) {
+  //               if (Platform.isAndroid) {
+  //                 await launchUrlString(
+  //                   Constant.githubRepository,
+  //                   mode: LaunchMode.externalApplication,
+  //                   browserConfiguration: BrowserConfiguration(showTitle: true),
+  //                   webOnlyWindowName: "Sudoku-Flutter Github Repository",
+  //                 );
+  //               } else {
+  //                 await launchUrlString(Constant.githubRepository,
+  //                     mode: LaunchMode.externalApplication);
+  //               }
+  //             } else {
+  //               log.e(
+  //                   "can't open browser to url : ${Constant.githubRepository}");
+  //             }
+  //           },
+  //         ),
+  //         Container(
+  //             margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+  //             padding: EdgeInsets.all(0),
+  //             child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text("Sudoku powered by Flutter",
+  //                       style: TextStyle(fontSize: 12)),
+  //                   Text(Constant.githubRepository,
+  //                       style: TextStyle(fontSize: 12))
+  //                 ]))
+  //       ]);
+  // }
 
   bool _isOnlyReadGrid(int index) => (_state.sudoku?.puzzle[index] ?? 0) != -1;
 
@@ -312,7 +312,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           top: 300,
           left: 180,
           child: Text(
-            'x10',
+            '+${Default.starsEarned(_state.level!)}',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize: 32.r,
                   fontFamily: fontLato,
@@ -394,6 +394,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         });
         break;
       case "exit":
+        updateHistory(isWinner);
         Navigator.pop(context);
         break;
       case "share":
@@ -402,9 +403,22 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         }
         break;
       default:
+        updateHistory(isWinner);
         Navigator.pop(context);
         break;
     }
+  }
+
+  void updateHistory(bool isWin) {
+    UserService.inst.updateGameResult(
+      _uuidGame,
+      isWin: isWin,
+      timeTaken: _state.timer,
+      endTime: DateTime.now(),
+      lifeUsed: _state.life,
+      hintsUsed: _state.hint,
+      starsEarned: Default.starsEarned(_state.level!),
+    );
   }
 
   // fill zone [ 1 - 9 ]
@@ -880,6 +894,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         isWrong = true;
       } else if (currentNum != -1) {
         textColor = Colors.blue; // người dùng nhập đúng
+        fillNumber(index, num);
       } else {
         textColor = Colors.grey.shade700; // trống
       }
@@ -887,8 +902,10 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
     final bool isPerceived = (currentNum != -1 && currentNum == _perceptionNum);
 
+    final bool hasEgg = eggCells.contains(index);
+    final emptySquare = currentNum == -1;
     final textWidget = Text(
-      currentNum == -1 ? '' : '$currentNum',
+      emptySquare ? '' : '$currentNum',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: fontSize,
@@ -903,10 +920,9 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     );
 
     final cell = Container(
-      // margin: const EdgeInsets.all(1),
       decoration: BoxDecoration(
-        color: _gridCellBgColor(index),
-        // borderRadius: BorderRadius.circular(6),
+        color:
+            emptySquare && hasEgg ? Color(0xFFEF3349) : _gridCellBgColor(index),
         border: Border.all(
           color: isWrong
               ? Colors.redAccent.withOpacity(0.5)
@@ -915,7 +931,11 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         ),
       ),
       alignment: Alignment.center,
-      child: textWidget,
+      child: emptySquare
+          ? (hasEgg
+              ? Image.asset('assets/image/egg_daily.png', scale: 2)
+              : null)
+          : textWidget,
     );
 
     return InkWell(
@@ -1031,6 +1051,13 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     }
 
     _perceptionNum = perceptionNum;
+  }
+
+  void fillNumber(int index, int number) {
+    if (eggCells.contains(index)) {
+      _state.hintAdd();
+      eggCells.remove(index);
+    }
   }
 
   _updateChooseState(index) {
@@ -1163,6 +1190,11 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     WidgetsBinding.instance.addObserver(this);
     _updateChooseState(0);
     _gaming();
+
+    generateEggCells();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      _uuidGame = await UserService.inst.addGameResult(_state.level!);
+    });
   }
 
   @override
@@ -1244,7 +1276,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   }
 
   List<String> shareMessages = [
-    "🎉 I just conquered Sudoku Level {level} in {time} ⏱️\nWho’s confident enough to beat me? 😎\n#SudokuChallenge #NexStudio",
+    "🎉 I just conquered Sudoku Level {level} in {time} ⏱️\nWho’s confident enough to beat me? 😎\n#SudokuHatchling #NexStudio",
     "🚀 Completed Sudoku {level} in just {time}!\nWhich friend dares to break my record? 🧩\nDownload now and prove your skills 💪\n#SudokuHatchling",
     "🧠 After {time}, I finally solved Sudoku Level {level}.\nMy brain is now at \"Super Saiyan\" level 🤯⚡️\nWho wants to test their IQ? 😂",
     "✅ Sudoku Completed: {level}\n⏱️ Time: {time}\nOne step closer to becoming a Sudoku Master 🏆",
@@ -1254,6 +1286,21 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     final random = Random();
     String template = shareMessages[random.nextInt(shareMessages.length)];
     return template.replaceAll("{level}", level).replaceAll("{time}", time);
+  }
+
+  final random = Random();
+  late List<int> eggCells;
+
+  void generateEggCells() {
+    final emptyIndices = <int>[];
+    for (int i = 0; i < _state.sudoku!.puzzle.length; i++) {
+      if (_state.sudoku!.puzzle[i] == -1) {
+        emptyIndices.add(i);
+      }
+    }
+
+    emptyIndices.shuffle(random);
+    eggCells = emptyIndices.take(3).toList();
   }
 
   @override

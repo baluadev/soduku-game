@@ -13,9 +13,73 @@ final Logger log = Logger();
 
 ///
 /// global constant
-class _Default {
-  static const int life = 3;
-  static const int hint = 2;
+class Default {
+  // static const int life = 3;
+  // static const int hint = 2;
+  // static const int maxLife = 5;
+  static int defaultLife(Level level) {
+    switch (level) {
+      case Level.eggshell:
+        return 5;
+      case Level.cracked:
+        return 4;
+      case Level.chick:
+        return 3;
+      case Level.fledgeling:
+        return 3;
+      case Level.wiseowl:
+        return 2;
+      default:
+        return 5;
+    }
+  }
+
+  static int defaultHint(Level level) {
+    switch (level) {
+      case Level.eggshell:
+        return 3;
+      case Level.cracked:
+        return 2;
+      case Level.chick:
+        return 1;
+      default:
+        return 0;
+    }
+  }
+
+  static int eggCell(Level level) {
+    switch (level) {
+      case Level.eggshell:
+        return 5;
+      case Level.cracked:
+        return 4;
+      case Level.chick:
+        return 3;
+      case Level.fledgeling:
+        return 2;
+      case Level.wiseowl:
+        return 1;
+      default:
+        return 5;
+    }
+  }
+
+  static int starsEarned(Level level) {
+    switch (level) {
+      case Level.eggshell:
+        return 10;
+      case Level.cracked:
+        return 20;
+      case Level.chick:
+        return 30;
+      case Level.fledgeling:
+        return 40;
+      case Level.wiseowl:
+        return 50;
+      default:
+        return 10;
+    }
+  }
 }
 
 @HiveType(typeId: 6)
@@ -101,8 +165,8 @@ class SudokuState extends Model {
     this.sudoku = sudoku;
     this.level = level;
     this.timing = 0;
-    this.life = _Default.life;
-    this.hint = _Default.hint;
+    this.life = Default.defaultLife(this.level ?? Level.eggshell);
+    this.hint = Default.defaultHint(this.level ?? Level.eggshell);
     this.record = List.generate(81, (index) => -1);
     this.mark =
         List.generate(81, (index) => List.generate(10, (index) => false));
@@ -138,6 +202,11 @@ class SudokuState extends Model {
     if (this.hint > 0) {
       this.hint--;
     }
+    notifyListeners();
+  }
+
+  void hintAdd() {
+    this.hint++;
     notifyListeners();
   }
 

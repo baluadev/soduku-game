@@ -72,28 +72,40 @@ class GameHistoryAdapter extends TypeAdapter<GameHistory> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return GameHistory(
-      level: fields[0] as Level,
-      isWin: fields[1] as bool,
-      timeTaken: fields[2] as Duration,
-      playedAt: fields[3] as DateTime,
-      rewardPoints: fields[4] as int,
+      id: fields[0] as String,
+      level: fields[1] as int,
+      isWin: fields[2] as bool,
+      timeTaken: fields[3] as String,
+      startTime: fields[4] as DateTime,
+      endTime: fields[5] as DateTime,
+      lifeUsed: fields[6] as int,
+      hintsUsed: fields[7] as int,
+      starsEarned: fields[8] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, GameHistory obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(9)
       ..writeByte(0)
-      ..write(obj.level)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.isWin)
+      ..write(obj.level)
       ..writeByte(2)
-      ..write(obj.timeTaken)
+      ..write(obj.isWin)
       ..writeByte(3)
-      ..write(obj.playedAt)
+      ..write(obj.timeTaken)
       ..writeByte(4)
-      ..write(obj.rewardPoints);
+      ..write(obj.startTime)
+      ..writeByte(5)
+      ..write(obj.endTime)
+      ..writeByte(6)
+      ..write(obj.lifeUsed)
+      ..writeByte(7)
+      ..write(obj.hintsUsed)
+      ..writeByte(8)
+      ..write(obj.starsEarned);
   }
 
   @override
