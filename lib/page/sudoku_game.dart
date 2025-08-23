@@ -389,9 +389,9 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     log.i(signal);
     switch (signal) {
       case "ad":
-        InterstitialAdManager.inst.showAd(onAdDismissed: () {
-          _state.lifeAdd();
-        });
+        // InterstitialAdManager.inst.showAd(onAdDismissed: () {
+        //   _state.lifeAdd();
+        // });
         break;
       case "exit":
         Navigator.pop(context);
@@ -1136,7 +1136,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           Container(margin: EdgeInsets.fromLTRB(0, 5, 0, 5)),
           _fillZone(context),
           // _toolZone(context, _state.hint)
-          BannerAdmanager(size: AdSize.largeBanner),
+          // BannerAdmanager(size: AdSize.largeBanner),
         ],
       ),
     );

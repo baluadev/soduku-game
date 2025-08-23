@@ -37,8 +37,8 @@ void main() async {
   Hive.registerAdapter(UserProfileAdapter());
   Hive.registerAdapter(GameHistoryAdapter());
   MobileAds.instance.initialize();
-  AppOpenAdManager.inst.loadAd();
-  InterstitialAdManager.inst.loadAd();
+  // AppOpenAdManager.inst.loadAd();
+  // InterstitialAdManager.inst.loadAd();
   await UserService.inst.init();
   runApp(MyApp());
   WidgetsBinding.instance.addObserver(_Handler());
@@ -49,9 +49,9 @@ class _Handler extends WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      AppOpenAdManager.inst.onAppPaused();
+      // AppOpenAdManager.inst.onAppPaused();
     } else if (state == AppLifecycleState.resumed) {
-      AppOpenAdManager.inst.onAppResumed();
+      // AppOpenAdManager.inst.onAppResumed();
     }
   }
 }
