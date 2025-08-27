@@ -3,6 +3,7 @@ import 'dart:io';
 const String fontSummary = 'Summary Notes';
 const String fontLato = 'Lato';
 const double padding = 16.0;
+const String baseUrl = 'api-oa74jn4bxa-uc.a.run.app';
 final String appIDAdmob =
     Platform.isAndroid ? 'ca-app-pub-8681872943360035~5014514686' : '';
 

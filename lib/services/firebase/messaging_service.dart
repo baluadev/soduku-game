@@ -17,10 +17,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class MessagingService {
   static final MessagingService inst = MessagingService._internal();
   MessagingService._internal();
-
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
   final StreamControllerhandleData = StreamController.broadcast();
 
   Future<void> setup() async {
+    await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 //Listen from firebase
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -45,5 +50,9 @@ class MessagingService {
 
   dispose() {
     // handleData.close();
+  }
+
+  Future<String?> getToken() async {
+    return await messaging.getToken();
   }
 }

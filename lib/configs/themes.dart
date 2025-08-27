@@ -8,6 +8,10 @@ class AppThemes {
     brightness: Brightness.light,
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
     primaryColor: Color(0xFFFFD72E),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Color(0xFFFFFFFF),
+      elevation: 1
+    ),
     colorScheme: ColorScheme(
       brightness: Brightness.light,
       primary: Color(0xFFFFD72E),
@@ -47,6 +51,10 @@ class AppThemes {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.black,
     primaryColor: Color(0xFFFFD72E),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.black,
+      elevation: 1
+    ),
     colorScheme: ColorScheme(
       brightness: Brightness.dark,
       primary: Color(0xFFFFD72E),

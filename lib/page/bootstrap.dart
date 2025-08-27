@@ -15,7 +15,8 @@ import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/page/onboarding.dart';
-import 'package:sudoku/services/firebase/firestore_service.dart';
+// import 'package:sudoku/services/firebase/firestore_service.dart';
+import 'package:sudoku/services/firebase/functions_service.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
@@ -353,7 +354,6 @@ class _BootstrapPageState extends State<BootstrapPage> {
               const SizedBox(height: 12),
               ...levelData.map((e) {
                 final id = e['id'];
-
                 return GestureDetector(
                   onTap: () {
                     selectLevel(id);
@@ -436,7 +436,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
           leadingWidth: 0,
           centerTitle: false,
           title: FutureBuilder(
-            future: FirestoreService.inst.getMyRank(),
+            future: FunctionsService.inst.getUserRank(),
             builder: (context, snapshot) {
               final rank = snapshot.data ?? 0;
               return RichText(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sudoku/effect/buttons.dart';
+import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/size_extension.dart';
 
@@ -167,8 +168,55 @@ class _EnterNameState extends State<EnterName> {
                   if (controllers
                       .every((controller) => controller.text.isNotEmpty)) {
                     final name = controllers.map((e) => e.text).join();
-                    UserService.inst.createProfile(name).then((value) =>
-                        Navigator.popAndPushNamed(context, '/bootstrap'));
+                    final styleSnack = Theme.of(context).textTheme.titleMedium;
+                    try {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => Dialog(
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                EggLoading(),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                  child: Text(
+                                    "Please await ...",
+                                    style: styleSnack,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                      UserService.inst.createProfile(name).then((value) {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/bootstrap', (route) => false);
+                      }).catchError((error) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              error.toString(),
+                              style: styleSnack,
+                            ),
+                          ),
+                        );
+                      });
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            e.toString(),
+                            style: styleSnack
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
               ),

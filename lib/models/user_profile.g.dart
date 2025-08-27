@@ -26,13 +26,14 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       removeAds: fields[5] as bool?,
       darkMode: fields[6] as bool?,
       enableSound: fields[7] as bool?,
+      fcmToken: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(7)
       ..write(obj.enableSound)
       ..writeByte(8)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(9)
+      ..write(obj.fcmToken);
   }
 
   @override

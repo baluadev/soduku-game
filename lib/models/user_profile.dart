@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:sudoku/services/firebase/firestore_service.dart';
+import 'package:sudoku/services/firebase/functions_service.dart';
+import 'package:sudoku/services/firebase/messaging_service.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,6 +36,9 @@ class UserProfile extends HiveObject {
   @HiveField(8)
   String id;
 
+  @HiveField(9)
+  String? fcmToken;
+
   UserProfile({
     required this.id,
     required this.name,
@@ -43,7 +48,8 @@ class UserProfile extends HiveObject {
     this.gamesLost = 0,
     this.removeAds = false,
     this.darkMode = false,
-    this.enableSound = false,
+    this.enableSound = true,
+    this.fcmToken,
   });
 }
 
@@ -134,9 +140,24 @@ class UserService {
 
   // Tạo mới user profile
   Future<void> createProfile(String name) async {
-    final profile = UserProfile(id: Uuid().v4(), name: name);
+    final fcmToken = await MessagingService.inst.getToken();
+    final userId = await FunctionsService.inst.registerProfile(
+      name,
+      fcmToken ?? '',
+    );
+
+    if (userId == null) {
+      throw Exception("Error registering user");
+    }
+
+    final profile = UserProfile(
+      id: userId,
+      name: name,
+      fcmToken: fcmToken,
+    );
     await profileBox.clear();
     await profileBox.add(profile);
+    FunctionsService.inst.updateLeaderboard();
   }
 
   //darkMode
@@ -209,7 +230,7 @@ class UserService {
         starsEarned: starsEarned,
       );
       await _historyBox.putAt(index, updated);
-      await FirestoreService.inst.updateLeaderboard();
+      if (isWin) await FunctionsService.inst.updateLeaderboard();
     }
   }
 
