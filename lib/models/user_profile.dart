@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:sudoku/services/firebase/firestore_service.dart';
-import 'package:sudoku/services/firebase/functions_service.dart';
+import 'package:sudoku/network/network.dart';
 import 'package:sudoku/services/firebase/messaging_service.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
 import 'package:uuid/uuid.dart';
@@ -141,23 +140,14 @@ class UserService {
   // Tạo mới user profile
   Future<void> createProfile(String name) async {
     final fcmToken = await MessagingService.inst.getToken();
-    final userId = await FunctionsService.inst.registerProfile(
+    final message = await Network.inst.registerProfile(
       name,
       fcmToken ?? '',
     );
 
-    if (userId == null) {
-      throw Exception("Error registering user");
+    if (message != null) {
+      throw Exception(message);
     }
-
-    final profile = UserProfile(
-      id: userId,
-      name: name,
-      fcmToken: fcmToken,
-    );
-    await profileBox.clear();
-    await profileBox.add(profile);
-    FunctionsService.inst.updateLeaderboard();
   }
 
   //darkMode
@@ -230,7 +220,7 @@ class UserService {
         starsEarned: starsEarned,
       );
       await _historyBox.putAt(index, updated);
-      if (isWin) await FunctionsService.inst.updateLeaderboard();
+      if (isWin) await Network.inst.updateLeaderboard();
     }
   }
 

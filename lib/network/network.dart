@@ -5,9 +5,10 @@ import 'package:sudoku/main.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:http/http.dart' as http;
 
-class FunctionsService {
-  static final FunctionsService inst = FunctionsService._internal();
-  FunctionsService._internal();
+class Network {
+  static final Network inst = Network._internal();
+  Network._internal();
+
   Future<String?> registerProfile(String name, String fcmToken) async {
     try {
       var url = Uri.https(baseUrl, 'register');
@@ -15,15 +16,27 @@ class FunctionsService {
         'username': name,
         'fcmToken': fcmToken,
       });
-      if (response.statusCode != 200) {
-        return null;
-      }
       final data = jsonDecode(response.body);
       log.i(data);
-      return data['userId'] as String?;
-    } catch (e) {
-      log.e(e.toString());
+      if (response.statusCode != 200) {
+        return data['message'] ?? 'Contact Admin';
+      }
+      final userId = data['userId'] as String;
+      final profile = UserProfile(
+        id: userId,
+        name: name,
+        fcmToken: fcmToken,
+      );
+
+      await Future.wait([
+        UserService.inst.profileBox.clear(),
+        UserService.inst.profileBox.add(profile),
+      ]);
+      await updateLeaderboard();
       return null;
+    } catch (e) {
+      final eTxt = e.toString();
+      return eTxt;
     }
   }
 
@@ -31,13 +44,14 @@ class FunctionsService {
     final profile = UserService.inst.getProfile();
     try {
       var url = Uri.https(baseUrl, 'leaderboard');
-      await http.post(url, body: {
+      final resp = await http.post(url, body: {
         'username': profile!.name,
         'userId': profile.id,
-        'totalGames': UserService.inst.totalGames(),
-        'winGames': UserService.inst.winGames(),
-        'stars': UserService.inst.totalStars(),
+        'totalGames': 0, //UserService.inst.totalGames(),
+        'winGames': 0, //UserService.inst.winGames(),
+        'stars': 0, //UserService.inst.totalStars(),
       });
+      log.i(resp.body);
     } catch (e) {
       log.e(e.toString());
     }

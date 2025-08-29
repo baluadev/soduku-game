@@ -14,9 +14,8 @@ import 'package:sudoku/effect/egg_loading.dart';
 // import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
+import 'package:sudoku/network/network.dart';
 import 'package:sudoku/page/onboarding.dart';
-// import 'package:sudoku/services/firebase/firestore_service.dart';
-import 'package:sudoku/services/firebase/functions_service.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
@@ -352,68 +351,75 @@ class _BootstrapPageState extends State<BootstrapPage> {
                     ?.copyWith(color: Colors.black),
               ),
               const SizedBox(height: 12),
-              ...levelData.map((e) {
-                final id = e['id'];
-                return GestureDetector(
-                  onTap: () {
-                    selectLevel(id);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          e['icon'],
-                          scale: 2,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+              Expanded(
+                child: ListView(
+                  children: [
+                    ...levelData.map((e) {
+                      final id = e['id'];
+                      return GestureDetector(
+                        onTap: () {
+                          selectLevel(id);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
                             children: [
-                              Text(
-                                e['title'],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        fontSize: 32.r, color: Colors.black),
+                              Image.asset(
+                                e['icon'],
+                                scale: 2,
                               ),
-                              Text(
-                                '(${e['subtitle']})',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                      fontSize: 16.r,
-                                      fontFamily: fontLato,
-                                      color: Colors.black,
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      e['title'],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                              fontSize: 32.r,
+                                              color: Colors.black),
                                     ),
+                                    Text(
+                                      '(${e['subtitle']})',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontSize: 16.r,
+                                            fontFamily: fontLato,
+                                            color: Colors.black,
+                                          ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              Spacer(),
+                              selectLv == id
+                                  ? Image.asset(
+                                      'assets/image/on_toogle.png',
+                                      scale: 2,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                    )
+                                  : Image.asset(
+                                      'assets/image/off_toogle.png',
+                                      scale: 2,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                    ),
                             ],
                           ),
                         ),
-                        Spacer(),
-                        selectLv == id
-                            ? Image.asset(
-                                'assets/image/on_toogle.png',
-                                scale: 2,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              )
-                            : Image.asset(
-                                'assets/image/off_toogle.png',
-                                scale: 2,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+                      );
+                    }),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -436,7 +442,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
           leadingWidth: 0,
           centerTitle: false,
           title: FutureBuilder(
-            future: FunctionsService.inst.getUserRank(),
+            future: Network.inst.getUserRank(),
             builder: (context, snapshot) {
               final rank = snapshot.data ?? 0;
               return RichText(

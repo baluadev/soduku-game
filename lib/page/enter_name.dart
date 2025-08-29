@@ -192,10 +192,14 @@ class _EnterNameState extends State<EnterName> {
                           ),
                         ),
                       );
+
+                      FocusScope.of(context).requestFocus(FocusNode());
                       UserService.inst.createProfile(name).then((value) {
                         Navigator.of(context).pop();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/bootstrap', (route) => false);
+                        Future.delayed(Duration(seconds: 1), () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/bootstrap', (route) => false);
+                        });
                       }).catchError((error) {
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -210,10 +214,7 @@ class _EnterNameState extends State<EnterName> {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            e.toString(),
-                            style: styleSnack
-                          ),
+                          content: Text(e.toString(), style: styleSnack),
                         ),
                       );
                     }
