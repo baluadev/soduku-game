@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sudoku/effect/buttons.dart';
-import 'package:sudoku/main.dart';
 import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/splash_screen.dart';
 
@@ -16,7 +15,6 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    log.e(UserService.inst.getAllHistories());
   }
 
   @override
@@ -97,12 +95,12 @@ class _SettingsState extends State<Settings> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  ListTile(
-                    title: Text(
-                      'Policies & Terms',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
+                  // ListTile(
+                  //   title: Text(
+                  //     'Policies & Terms',
+                  //     style: Theme.of(context).textTheme.titleLarge,
+                  //   ),
+                  // ),
                 ],
               ),
             )

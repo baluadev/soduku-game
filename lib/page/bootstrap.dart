@@ -12,14 +12,14 @@ import 'package:sudoku/configs/const.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/egg_loading.dart';
 // import 'package:sudoku/effect/sound_effect.dart';
-import 'package:sudoku/models/user_profile.dart';
 import 'package:sudoku/native/sudoku.dart';
 import 'package:sudoku/network/network.dart';
-import 'package:sudoku/page/onboarding.dart';
 import 'package:sudoku/size_extension.dart';
 import 'package:sudoku/splash_screen.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
+
+import 'dialog/dialog_helper.dart';
 // import 'package:sudoku/util/localization_util.dart';
 
 // import 'ai_scan.dart';
@@ -60,9 +60,7 @@ List levelData = [
 ];
 
 class BootstrapPage extends StatefulWidget {
-  BootstrapPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  BootstrapPage({Key? key}) : super(key: key);
 
   @override
   _BootstrapPageState createState() => _BootstrapPageState();
@@ -250,27 +248,8 @@ void _internalSudokuGenerate(List<dynamic> args) {
 
 Future _sudokuGenerate(BuildContext context, Level level) async {
   String sudokuGenerateText = AppLocalizations.of(context)!.sudokuGenerateText;
-
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => Dialog(
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            EggLoading(),
-            Container(
-                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: Text("$sudokuGenerateText ...",
-                    style: TextStyle(fontSize: 13)))
-          ],
-        ),
-      ),
-    ),
-  );
-
+  // show dialog
+  DialogHelper.showLoading(title: sudokuGenerateText);
   ReceivePort receivePort = ReceivePort();
 
   Isolate isolate = await Isolate.spawn(
@@ -284,8 +263,10 @@ Future _sudokuGenerate(BuildContext context, Level level) async {
   isolate.kill(priority: Isolate.immediate);
   log.d("receivePort.listen done!");
 
+
+  await Future.delayed(Duration(seconds: 1));
   // dismiss dialog
-  Navigator.pop(context);
+  await DialogHelper.hideLoading();
 }
 
 class _BootstrapPageState extends State<BootstrapPage> {
@@ -315,23 +296,9 @@ class _BootstrapPageState extends State<BootstrapPage> {
           child: Stack(
             children: [
               CustomPaint(
-                  size: Size(MediaQuery.of(context).size.width, 200),
-                  painter:
-                      WavePainter(Theme.of(context).scaffoldBackgroundColor)),
-              Positioned(
-                bottom: 10,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  child: BtnRed(
-                    title: 'Let’s Play!',
-                    onTap: () async {
-                      final level =
-                          Level.values.where((e) => e.index == selectLv).first;
-                      await _sudokuGenerate(context, level);
-                      Navigator.pushNamed(context, "/gaming");
-                    },
-                  ),
+                size: Size(MediaQuery.of(context).size.width, 200),
+                painter: WavePainter(
+                  Theme.of(context).scaffoldBackgroundColor,
                 ),
               ),
             ],
@@ -423,17 +390,28 @@ class _BootstrapPageState extends State<BootstrapPage> {
             ],
           ),
         ),
+        Positioned(
+          bottom: 10,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: BtnRed(
+              title: 'Let’s Play!',
+              onTap: () async {
+                final level =
+                    Level.values.where((e) => e.index == selectLv).first;
+                await _sudokuGenerate(context, level);
+                Navigator.pushNamed(context, "/gaming");
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile = UserService.inst.getProfile();
-    if (profile == null) {
-      return Onboarding();
-    }
-
     return ScopedModelDescendant<SudokuState>(
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(

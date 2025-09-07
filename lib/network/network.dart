@@ -9,7 +9,11 @@ class Network {
   static final Network inst = Network._internal();
   Network._internal();
 
-  Future<String?> registerProfile(String name, String fcmToken) async {
+  final headers = {
+    'Content-Type': 'application/json',
+  };
+
+  Future<dynamic> registerProfile(String name, String fcmToken) async {
     try {
       var url = Uri.https(baseUrl, 'register');
       var response = await http.post(url, body: {
@@ -22,35 +26,31 @@ class Network {
         return data['message'] ?? 'Contact Admin';
       }
       final userId = data['userId'] as String;
-      final profile = UserProfile(
-        id: userId,
-        name: name,
-        fcmToken: fcmToken,
-      );
+      log.i('Registered with userId: $userId');
 
-      await Future.wait([
-        UserService.inst.profileBox.clear(),
-        UserService.inst.profileBox.add(profile),
-      ]);
-      await updateLeaderboard();
-      return null;
+      return {
+        'userId': userId,
+      };
     } catch (e) {
       final eTxt = e.toString();
       return eTxt;
     }
   }
 
-  Future<void> updateLeaderboard() async {
-    final profile = UserService.inst.getProfile();
+  Future<void> updateLeaderboard({UserProfile? profile}) async {
+    profile ??= UserService.inst.getProfile();
+    log.i('Update leaderboard for ${profile!.name}');
     try {
       var url = Uri.https(baseUrl, 'leaderboard');
-      final resp = await http.post(url, body: {
-        'username': profile!.name,
-        'userId': profile.id,
-        'totalGames': 0, //UserService.inst.totalGames(),
-        'winGames': 0, //UserService.inst.winGames(),
-        'stars': 0, //UserService.inst.totalStars(),
-      });
+      final resp = await http.post(url,
+          headers: headers,
+          body: jsonEncode({
+            'username': profile.name,
+            'userId': profile.id,
+            'totalGames': UserService.inst.totalGames(),
+            'winGames': UserService.inst.winGames(),
+            'stars': UserService.inst.totalStars(),
+          }));
       log.i(resp.body);
     } catch (e) {
       log.e(e.toString());

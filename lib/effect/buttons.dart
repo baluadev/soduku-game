@@ -27,7 +27,10 @@ class _BtnEffectState extends State<BtnEffect> {
         setState(() {
           _isPressed = false;
         });
-        widget.onTap?.call();
+
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
       },
       onTapCancel: () {
         setState(() {

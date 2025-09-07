@@ -12,10 +12,12 @@ import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/effect/sound_effect.dart';
 import 'package:sudoku/page/bootstrap.dart';
+import 'package:sudoku/page/onboarding.dart';
 import 'package:sudoku/page/sudoku_game.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 
 import 'configs/themes.dart';
+import 'helper/navigation_service.dart';
 import 'ml/detector.dart';
 import 'models/user_profile.dart';
 import 'page/enter_name.dart';
@@ -95,7 +97,8 @@ class _MyAppState extends State<MyApp> {
       //   errorAndStacktrace.last,
       //   fatal: true,
       // );
-    }).sendPort);
+    })
+        .sendPort);
   }
 
   // warmed up effect when application build before
@@ -113,6 +116,7 @@ class _MyAppState extends State<MyApp> {
     await _firebaseInit();
     await _soundEffectWarmedUp();
     await _modelWarmedUp();
+    await UserService.inst.init();
     return await SudokuState.resumeFromDB();
   }
 
@@ -120,7 +124,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     SizeConfig.init(context, 390, 844);
 
-    BootstrapPage bootstrapPage = BootstrapPage(title: "Loading");
+    BootstrapPage bootstrapPage = BootstrapPage();
     SudokuGamePage sudokuGamePage = SudokuGamePage(
       title: "Sudoku",
     );
@@ -133,6 +137,7 @@ class _MyAppState extends State<MyApp> {
           final darkMode = UserService.inst.darkMode();
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            navigatorKey: NavigationService.inst.rootNavigatorKey,
             title: 'Sudoku Hatchling',
             theme: AppThemes.lightTheme, // Light mode
             darkTheme: AppThemes.darkTheme, // Dark mode
@@ -149,9 +154,14 @@ class _MyAppState extends State<MyApp> {
             ],
             locale: Locale("en"), // i18n debug
             supportedLocales: AppLocalizations.supportedLocales,
-            home: _sudokuState != null
-                ? BootstrapPage(title: "Loading")
-                : SplashScreen(),
+            home: _sudokuState == null
+                ? SplashScreen()
+                : UserService.inst.getProfile() != null
+                    ? bootstrapPage
+                    : Onboarding(),
+            builder: (context, child) {
+              return child!;
+            },
             routes: <String, WidgetBuilder>{
               "/bootstrap": (context) => bootstrapPage,
               "/newGame": (context) => sudokuGamePage,

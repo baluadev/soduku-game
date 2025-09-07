@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sudoku/effect/buttons.dart';
 import 'package:sudoku/effect/egg_loading.dart';
 import 'package:sudoku/models/user_profile.dart';
+import 'package:sudoku/page/dialog/dialog_helper.dart';
 import 'package:sudoku/size_extension.dart';
 
 class EnterName extends StatefulWidget {
@@ -169,55 +170,22 @@ class _EnterNameState extends State<EnterName> {
                       .every((controller) => controller.text.isNotEmpty)) {
                     final name = controllers.map((e) => e.text).join();
                     final styleSnack = Theme.of(context).textTheme.titleMedium;
-                    try {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => Dialog(
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                EggLoading(),
-                                Container(
-                                  margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                  child: Text(
-                                    "Please await ...",
-                                    style: styleSnack,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      UserService.inst.createProfile(name).then((value) {
-                        Navigator.of(context).pop();
-                        Future.delayed(Duration(seconds: 1), () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/bootstrap', (route) => false);
-                        });
-                      }).catchError((error) {
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              error.toString(),
-                              style: styleSnack,
-                            ),
-                          ),
-                        );
-                      });
-                    } catch (e) {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    DialogHelper.showLoading();
+                    UserService.inst.createProfile(name).then((value) {
+                      DialogHelper.hideLoading();
+                      Navigator.of(context).popAndPushNamed('/bootstrap');
+                    }).catchError((error) {
+                      DialogHelper.hideLoading();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(e.toString(), style: styleSnack),
+                          content: Text(
+                            error.toString(),
+                            style: styleSnack,
+                          ),
                         ),
                       );
-                    }
+                    });
                   }
                 },
               ),

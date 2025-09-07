@@ -67,7 +67,8 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Share.share('🏆 Sudoku Winner! \nTime: ${e.timeTaken} ⏳ | Stars: ${e.starsEarned} ⭐ \n #SudokuHatchling #SudokuChallenge #BrainGame');
+                    
+                    Share.share('🏆 Sudoku ${e.isWin?'Winner': 'Hatchling'}! \nTime: ${e.timeTaken} ⏳ | Stars: ${e.starsEarned} ⭐ \n #SudokuHatchling #SudokuChallenge #BrainGame');
                   },
                   child: Container(
                     height: 50,

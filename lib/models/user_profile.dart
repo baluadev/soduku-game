@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:sudoku/main.dart';
 import 'package:sudoku/network/network.dart';
 import 'package:sudoku/services/firebase/messaging_service.dart';
 import 'package:sudoku/sudoku_dart/lib/sudoku_dart.dart';
@@ -128,6 +129,7 @@ class UserService {
 
   Future<void> init() async {
     profileBox = await Hive.openBox<UserProfile>(userProfileBox);
+    log.i('UserService init $profileBox');
     _historyBox = await Hive.openBox<GameHistory>(gameHistoryBox);
   }
 
@@ -140,14 +142,26 @@ class UserService {
   // Tạo mới user profile
   Future<void> createProfile(String name) async {
     final fcmToken = await MessagingService.inst.getToken();
-    final message = await Network.inst.registerProfile(
+    final data = await Network.inst.registerProfile(
       name,
       fcmToken ?? '',
     );
 
-    if (message != null) {
-      throw Exception(message);
+    if (data is String) {
+      throw Exception(data);
     }
+
+    final profile = UserProfile(
+      id: data['userId']!,
+      name: name,
+      fcmToken: fcmToken,
+    );
+
+    await UserService.inst.profileBox.clear();
+    await UserService.inst.profileBox.add(profile);
+    log.i('Profile saved locally');
+    log.i(UserService.inst.getProfile());
+    await Network.inst.updateLeaderboard(profile: profile);
   }
 
   //darkMode
@@ -261,11 +275,14 @@ class UserService {
 
   int winGames() {
     final list = getAllHistories();
+    if (list.isEmpty) return 0;
     return list.map((e) => e.isWin).toList().length;
   }
 
   int totalGames() {
-    return getAllHistories().length;
+    final list = getAllHistories();
+    if (list.isEmpty) return 0;
+    return list.length;
   }
 
   int totalStars() {
